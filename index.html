@@ -532,7 +532,6 @@
         <details class="adv" id="adv">
           <summary><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-chevron"/></svg>ตั้งค่าเพิ่มเติม (ไม่ต้องแตะก็ได้)</summary>
           <div class="adv-fields" id="advFields"></div>
-          <p class="help" id="trimNote"></p>
         </details>
       </section>
 
@@ -1026,7 +1025,6 @@ const BotNLU = (() => {
       if (p && BATCHES.indexOf(p.batch) !== -1) s.plans[id].batch = p.batch;
       s.menuCfg[id].sellPrice = num(c && c.sellPrice, 1, 9999, s.menuCfg[id].sellPrice);
       s.menuCfg[id].deliveryPrice = num(c && c.deliveryPrice, 1, 9999, s.menuCfg[id].deliveryPrice);
-      s.menuCfg[id].trimLossPct = num(c && c.trimLossPct, 0, 60, s.menuCfg[id].trimLossPct);
     });
     s.gpPct = num(o.gpPct, 0, 40, s.gpPct);
     s.targetMarginPct = num(o.targetMarginPct, 10, 80, s.targetMarginPct);
@@ -1175,11 +1173,6 @@ const BotNLU = (() => {
     adv.appendChild(plainField({ id: 'in-deliv', label: 'ราคาบนแอปเดลิเวอรี่ (บาท)', min: 1, max: 9999, get: () => state.menuCfg[state.menuId].deliveryPrice, set: (v) => { state.menuCfg[state.menuId].deliveryPrice = v; } }));
     adv.appendChild(plainField({ id: 'in-gp', label: 'ค่าหักแพลตฟอร์ม GP (%)', min: 0, max: 40, get: () => state.gpPct, set: (v) => { state.gpPct = v; } }));
     adv.appendChild(plainField({ id: 'in-target', label: 'กำไรขั้นต่ำที่ต้องการ (%)', min: 10, max: 80, get: () => state.targetMarginPct, set: (v) => { state.targetMarginPct = v; } }));
-    adv.appendChild(plainField({
-      id: 'in-trim', label: 'ของเสียจากการหั่น/ตัดแต่ง (%)', min: 0, max: 60,
-      get: () => state.menuCfg[state.menuId].trimLossPct, set: (v) => { state.menuCfg[state.menuId].trimLossPct = v; },
-      disabled: () => !RECIPES[state.menuId].lines.some((l) => l.trim)
-    }));
   }
   function renderStep2() {
     $('menuSelect').value = state.menuId;
@@ -1188,7 +1181,6 @@ const BotNLU = (() => {
       const p = DAY_PRESETS[b.getAttribute('data-dp')], cur = plan();
       b.setAttribute('aria-pressed', String(cur.pre === p.pre && cur.walk === p.walk && cur.stock === p.stock));
     });
-    $('trimNote').textContent = RECIPES[state.menuId].lines.some((l) => l.trim) ? '' : 'เมนูนี้ไม่มีของเสียจากการหั่น จึงไม่ต้องตั้งค่าช่องสุดท้าย';
     $('thDeliv').textContent = 'กำไรเดลิเวอรี่ (หัก GP ' + state.gpPct + '%)';
   }
 
