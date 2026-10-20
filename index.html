@@ -1,0 +1,1839 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#F6F0E4">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="SmartBatch & FreshMargin AI ต้นแบบช่วยวางแผนผลิตและดูกำไรต่อจานสำหรับร้านอาหารและเบเกอรี่ SME ไทย (ตัวเลขทั้งหมดเป็นตัวอย่างเพื่อสาธิต)">
+  <title>SmartBatch & FreshMargin AI - วางแผนผลิตวันนี้ ใน 3 นาที</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&amp;display=swap">
+  <style>
+    :root {
+      --paper: #F6F0E4;
+      --paper-2: #EDE3CE;
+      --ink: #221E1A;
+      --ink-2: #5B5247;
+      --rule: #CFC3AB;
+      --accent: #B5361E;
+      --ok: #2F6B3F;
+      --warn: #8A5A00;
+      --font: 'Sarabun', 'Noto Sans Thai', 'Leelawadee UI', 'Tahoma', system-ui, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { font-size: 17px; scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font);
+      line-height: 1.6;
+      overflow-wrap: break-word;
+    }
+    [hidden] { display: none !important; }
+    h1, h2, h3, p, ul, ol, figure, fieldset { margin: 0; padding: 0; }
+    ul, ol { list-style: none; }
+    h1, h2, h3 { line-height: 1.3; }
+    button, input, select { font: inherit; color: inherit; }
+    a { color: var(--ink); text-underline-offset: 3px; }
+    .sr-only {
+      position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
+    .num { font-variant-numeric: tabular-nums; }
+    .ic {
+      width: 1.25em; height: 1.25em; flex: none; vertical-align: -0.2em;
+      fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    /* focus */
+    :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+    .on-ink :focus-visible, .btn:focus-visible, .fab:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; box-shadow: 0 0 0 3px var(--paper); }
+    .skip {
+      position: absolute; left: 8px; top: -80px; z-index: 100; background: var(--ink); color: var(--paper);
+      padding: 12px 16px; text-decoration: none; font-weight: 700;
+    }
+    .skip:focus { top: 8px; }
+
+    /* buttons */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 48px; padding: 0 20px; border: 2px solid var(--ink); border-radius: 2px;
+      background: var(--ink); color: var(--paper); font-weight: 700; cursor: pointer; text-decoration: none;
+      transition: background-color .15s, transform .1s;
+    }
+    .btn:hover { background: #3C352E; }
+    .btn:active { transform: translateY(1px); }
+    .btn-ghost { background: transparent; color: var(--ink); }
+    .btn-ghost:hover { background: var(--paper-2); }
+    .btn[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+    .btn-sm { min-height: 44px; padding: 0 14px; font-size: .92rem; }
+    .linkbtn {
+      min-height: 44px; padding: 0 4px; background: none; border: 0; cursor: pointer; font-weight: 600;
+      text-decoration: underline; text-underline-offset: 3px;
+    }
+    .linkbtn:hover { color: var(--accent); }
+
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+
+    /* masthead */
+    .masthead { border-bottom: 2px solid var(--ink); padding-bottom: 32px; }
+    .topbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 24px; padding: 8px 0; border-bottom: 1px solid var(--rule); }
+    .wordmark { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.15rem; }
+    .wordmark small { font-weight: 600; color: var(--ink-2); font-size: .85rem; }
+    .topbar ul { display: flex; flex-wrap: wrap; gap: 0 20px; align-items: center; }
+    .topbar a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
+    .masthead h1 { font-size: clamp(2rem, 7vw, 3.6rem); font-weight: 800; line-height: 1.2; margin-top: 32px; max-width: 14em; }
+    .lede { margin-top: 12px; max-width: 34em; font-size: 1.1rem; color: var(--ink-2); }
+    .hero-actions { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 12px; }
+
+    /* layout */
+    .layout { max-width: 1120px; margin: 0 auto; padding: 0 16px; display: block; }
+    .rail {
+      position: sticky; top: 0; z-index: 20; background: var(--paper);
+      margin: 0 -16px; padding: 4px 16px; border-bottom: 2px solid var(--ink);
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 16px;
+    }
+    .rail-steps { display: flex; gap: 4px 16px; }
+    .rail-steps a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 700; text-decoration: none; }
+    .rail-steps b { color: var(--accent); font-size: 1.15rem; }
+    .rail-answer { display: flex; align-items: baseline; gap: 8px; }
+    .rail-label { display: none; font-size: .85rem; font-weight: 700; color: var(--ink-2); }
+    #railHeadline { font-weight: 800; font-size: 1.05rem; }
+    .step, #aws { padding-top: 40px; scroll-margin-top: 64px; }
+    .step h2, #aws h2 { display: flex; align-items: baseline; gap: 14px; font-size: 1.7rem; font-weight: 800; }
+    .stepnum { color: var(--accent); font-size: 3rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+    .step h3, #aws h3 { font-size: 1.15rem; font-weight: 800; margin: 32px 0 8px; }
+    .hint { color: var(--ink-2); font-size: .92rem; margin-top: 8px; max-width: 46em; }
+    @media (min-width: 960px) {
+      .layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 0 56px; }
+      .rail {
+        top: 16px; align-self: start; margin: 40px 0 0; padding: 0; border: 0; border-top: 2px solid var(--ink);
+        display: block;
+      }
+      .rail-steps { flex-direction: column; gap: 0; margin-top: 8px; }
+      .rail-steps li { border-bottom: 1px solid var(--rule); }
+      .rail-steps a { width: 100%; font-size: 1.05rem; }
+      .rail-steps b { font-size: 1.6rem; min-width: 1.2em; }
+      .rail-answer { display: block; margin-top: 16px; background: var(--ink); color: var(--paper); padding: 14px 16px; }
+      .rail-label { display: block; color: #D8CDB5; }
+      #railHeadline { font-size: 1.35rem; line-height: 1.35; }
+      .rail-answer :focus-visible { outline-color: var(--paper); }
+      .stack-col { grid-column: 2; }
+      .rail { grid-column: 1; grid-row: 1; }
+      .steps { grid-column: 2; grid-row: 1; }
+    }
+
+    /* note (receipt foot) */
+    .note { margin-top: 32px; padding-top: 12px; border-top: 1px dashed var(--ink-2); color: var(--ink-2); font-size: .92rem; max-width: 46em; }
+    .note strong { color: var(--ink); }
+
+    /* fields */
+    .field { margin-top: 20px; }
+    .field > label, .field > .lbl, legend { display: block; font-weight: 700; margin-bottom: 4px; padding: 0; }
+    .help { color: var(--ink-2); font-size: .88rem; }
+    .stepper { display: grid; grid-template-columns: 48px minmax(64px, 1fr) 48px; border: 2px solid var(--ink); background: #FFFBF2; max-width: 280px; }
+    .stepper button {
+      min-height: 52px; background: transparent; border: 0; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .stepper button:hover { background: var(--paper-2); }
+    .stepper button:active { background: var(--rule); }
+    .stepper button:focus-visible { outline-offset: -5px; }
+    .stepper input {
+      width: 100%; min-width: 0; min-height: 52px; border: 0; border-left: 1px solid var(--rule); border-right: 1px solid var(--rule);
+      background: transparent; text-align: center; font-size: 1.6rem; font-weight: 800; font-variant-numeric: tabular-nums;
+      -moz-appearance: textfield; appearance: textfield; border-radius: 0;
+    }
+    .stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .stepper input:focus-visible { outline-offset: -5px; }
+    .stepper input[aria-invalid="true"] { background: #F7DCD3; }
+    .field-msg { min-height: 1.5em; color: var(--accent); font-weight: 600; font-size: .88rem; margin-top: 4px; }
+    select, .plain {
+      min-height: 48px; padding: 0 12px; border: 2px solid var(--ink); border-radius: 2px; background: #FFFBF2; max-width: 100%; width: 100%;
+    }
+    .plain { font-size: 1.1rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    @media (min-width: 560px) { select { width: auto; min-width: 22em; } }
+    input[type="range"] { width: 100%; height: 44px; accent-color: var(--accent); margin: 4px 0 0; background: transparent; }
+
+    /* ledger tables */
+    .ledger { width: 100%; border-collapse: collapse; border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); margin-top: 16px; font-variant-numeric: tabular-nums; }
+    .ledger caption { text-align: left; font-weight: 700; padding-bottom: 8px; caption-side: top; }
+    .ledger th, .ledger td { padding: 12px 10px 12px 0; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: middle; font-weight: 400; }
+    .ledger thead th { font-size: .85rem; font-weight: 700; color: var(--ink-2); border-bottom: 1px solid var(--ink); vertical-align: bottom; }
+    .ledger tbody th { font-weight: 700; }
+    .ledger tr:last-child > * { border-bottom: 0; }
+    .ledger .r { text-align: right; padding-right: 0; padding-left: 10px; }
+    .note-line { display: block; font-weight: 400; color: var(--ink-2); font-size: .85rem; }
+    .chg { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+    .chg.up { color: var(--accent); font-weight: 800; }
+    .chg.down { color: var(--ok); }
+    .actions { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .actions .lbl { font-weight: 700; }
+    .seg { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+    @media (max-width: 719px) {
+      .pricetable thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+      .pricetable, .pricetable tbody, .pricetable tr, .pricetable th, .pricetable td { display: block; width: 100%; }
+      .pricetable tr { padding: 16px 0 12px; border-bottom: 1px solid var(--rule); }
+      .pricetable tr:last-child { border-bottom: 0; }
+      .pricetable th, .pricetable td { padding: 0; border: 0; }
+      .pricetable td[data-label="อ้างอิง"], .pricetable td[data-label="ครั้งก่อน"] { display: inline-block; width: auto; margin: 4px 16px 4px 0; color: var(--ink-2); font-size: .9rem; }
+      .pricetable td[data-label="อ้างอิง"]::before, .pricetable td[data-label="ครั้งก่อน"]::before { content: attr(data-label) " "; }
+      .pricetable td[data-label="เทียบอ้างอิง"] { margin-top: 4px; }
+      .stack, .stack tbody, .stack tr, .stack th, .stack td { display: block; width: 100%; }
+      .stack thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+      .stack tr { padding: 10px 0 10px 10px; border-bottom: 1px solid var(--rule); }
+      .stack tr.is-low { border-left: 4px solid var(--accent); }
+      .stack th, .stack td { padding: 3px 0; border: 0; }
+      .stack td { display: flex; justify-content: space-between; gap: 12px; }
+      .stack td::before { content: attr(data-label); color: var(--ink-2); font-size: .88rem; }
+      .stack .r { text-align: right; padding-left: 0; }
+      .stack .is-low > :first-child { box-shadow: none; padding-left: 0; }
+    }
+    @media (min-width: 720px) {
+      #marginTable th.r, #marginTable td.r { padding-right: 20px; }
+      #marginTable th:last-child, #marginTable td:last-child { padding-left: 8px; }
+      .pricetable th[scope="row"] { width: 26%; }
+      .pricetable td:nth-child(4) { width: 34%; }
+    }
+
+    /* presets and radio segments */
+    fieldset { border: 0; min-width: 0; }
+    .presets { margin-top: 24px; }
+    .presets .seg { margin-top: 4px; }
+    .radios { display: flex; flex-wrap: wrap; gap: 0; margin-top: 4px; }
+    .radio { position: relative; display: block; }
+    .radio input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+    .radio span {
+      display: flex; align-items: center; justify-content: center; min-height: 48px; min-width: 96px; padding: 0 16px;
+      border: 2px solid var(--ink); margin-left: -2px; font-weight: 700; background: #FFFBF2;
+    }
+    .radio:first-child span { margin-left: 0; }
+    .radio input:checked + span { background: var(--ink); color: var(--paper); }
+    .radio input:focus-visible + span { outline: 3px solid var(--ink); outline-offset: 3px; }
+    .grid-fields { display: grid; gap: 0 32px; grid-template-columns: 1fr; }
+    @media (min-width: 640px) { .grid-fields { grid-template-columns: repeat(3, minmax(0, 1fr)); } .grid-fields .stepper { max-width: none; } }
+    details.adv { margin-top: 28px; border-top: 1px solid var(--rule); }
+    summary { min-height: 48px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 700; list-style: none; }
+    summary::-webkit-details-marker { display: none; }
+    summary .ic { transition: transform .15s; }
+    details[open] > summary .ic { transform: rotate(180deg); }
+    .adv-fields { display: grid; gap: 0 32px; grid-template-columns: 1fr; padding-bottom: 8px; }
+    @media (min-width: 640px) { .adv-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+    /* result ticket */
+    .ticket { margin-top: 20px; border: 2px solid var(--ink); background: #FFFBF2; padding: 20px 20px 16px; }
+    .ticket-label { font-size: .88rem; font-weight: 700; color: var(--ink-2); }
+    .headline { font-size: clamp(1.9rem, 8vw, 3rem); font-weight: 800; line-height: 1.2; margin-top: 4px; font-variant-numeric: tabular-nums; }
+    .headline.flash { animation: flash .6s ease-out; }
+    @keyframes flash { from { background: #F3D9A8; } to { background: transparent; } }
+    .headline-sub { margin-top: 8px; color: var(--ink-2); }
+    hr.dash { border: 0; border-top: 2px dashed var(--ink-2); margin: 16px 0; }
+    .banner { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; font-weight: 600; }
+    .banner .ic { margin-top: .2em; }
+    .banner.low { background: var(--accent); color: #fff; }
+    .banner.watch { background: #F3D9A8; color: #3E2A00; }
+    .banner.ok { color: var(--ok); padding-left: 0; }
+    .banner.low :focus-visible { outline-color: #fff; }
+    .tablewrap { overflow-x: auto; }
+    .cmp th[scope="col"] { vertical-align: top; padding-bottom: 10px; color: var(--ink); font-size: .95rem; }
+    .cmp th[scope="col"].sel, .cmp td.sel { background: rgba(34, 30, 26, .06); }
+    .cmp .tag { display: block; font-size: .8rem; font-weight: 700; color: var(--ink-2); }
+    .cmp .pick { margin-top: 6px; min-height: 44px; width: 100%; padding: 0 6px; font-size: .88rem; }
+    .cmp tbody td { text-align: right; padding-right: 8px; font-weight: 600; }
+    .cmp tbody th { font-size: .92rem; width: 31%; }
+    .cmp .risk { color: var(--accent); font-weight: 800; }
+    .cmp .u { font-weight: 400; color: var(--ink-2); font-size: .82rem; display: block; }
+    .st { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; }
+    .st.low { color: var(--accent); }
+    .st.watch { color: var(--warn); }
+    .st.ok { color: var(--ok); }
+    .is-low > th, .is-low > td { font-weight: 700; }
+    .is-low > :first-child { box-shadow: inset 4px 0 0 var(--accent); padding-left: 12px; }
+    .why { margin-top: 32px; border-top: 2px solid var(--ink); border-bottom: 1px solid var(--rule); }
+    .why-body { padding: 4px 0 20px; }
+    .why-body p { margin-top: 10px; }
+    .why-body .formula { font-weight: 700; background: var(--paper-2); padding: 10px 12px; font-variant-numeric: tabular-nums; }
+    .why-body ul { margin-top: 12px; }
+    .why-body li { padding: 8px 0; border-bottom: 1px dashed var(--rule); font-variant-numeric: tabular-nums; }
+    .waste { margin-top: 40px; border-top: 2px solid var(--ink); }
+    .waste-grid { display: grid; gap: 8px 32px; grid-template-columns: 1fr; }
+    @media (min-width: 640px) { .waste-grid { grid-template-columns: 1fr 1fr; } }
+    .big { font-size: 1.8rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .big.risk { color: var(--accent); }
+
+    /* AWS */
+    #aws { margin-top: 56px; border-top: 2px solid var(--ink); }
+    .aws-intro { margin-top: 10px; max-width: 42em; color: var(--ink-2); font-size: 1.05rem; }
+    .arch { margin-top: 24px; }
+    .arch svg.arch-svg { display: block; width: 100%; height: auto; }
+    .arch svg.arch-wide { display: none; }
+    .arch svg.arch-tall { max-width: 480px; }
+    @media (min-width: 900px) { .arch svg.arch-wide { display: block; } .arch svg.arch-tall { display: none; } }
+    .node { cursor: pointer; transition: opacity .15s; }
+    .node .node-box { fill: #FFFBF2; stroke: var(--ink); stroke-width: 1.5; }
+    .node.dashed .node-box { stroke-dasharray: 6 4; }
+    .node:hover .node-box { fill: var(--paper-2); }
+    .node.sel .node-box { stroke: var(--accent); stroke-width: 4; }
+    .node:focus:not(:focus-visible) { outline: none; }
+    .node:focus-visible .node-box { stroke: var(--ink); stroke-width: 5; stroke-dasharray: none; }
+    .node:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+    .node .nl { font-weight: 800; fill: var(--ink); }
+    .node .na { fill: var(--ink-2); }
+    .node .ic { stroke: var(--ink); }
+    .dim { opacity: .3; }
+    .edge { fill: none; stroke-width: 2.5; }
+    .edge.owner { stroke: var(--ink); }
+    .edge.chat { stroke: var(--accent); stroke-dasharray: 7 5; }
+    .legend-t { font-size: 13px; font-weight: 700; fill: var(--ink); }
+    .legend-t.chat { fill: var(--accent); }
+    .legend-line { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 12px; font-size: .9rem; color: var(--ink-2); }
+    .legend-line span { display: inline-flex; align-items: center; gap: 8px; }
+    .legend-line i { display: inline-block; width: 36px; height: 0; border-top: 3px solid var(--ink); }
+    .legend-line i.chat { border-top: 3px dashed var(--accent); }
+    .arch-detail { margin-top: 20px; border: 2px solid var(--ink); background: #FFFBF2; padding: 14px 16px; min-height: 8.5em; }
+    .arch-detail .k { font-size: .85rem; font-weight: 700; color: var(--ink-2); }
+    .arch-detail .big-a { font-size: 1.3rem; font-weight: 800; line-height: 1.35; margin-top: 2px; }
+    .arch-detail p { margin-top: 6px; }
+    .arch-detail .tagline { display: inline-block; margin-top: 8px; padding: 4px 10px; background: var(--ink); color: var(--paper); font-weight: 700; font-size: .9rem; }
+    .arch-detail .btn { margin-top: 10px; }
+    .tisp { color: var(--ink-2); font-size: .92rem; margin-top: 10px; }
+    .flow-steps { counter-reset: s; margin-top: 8px; border-top: 2px solid var(--ink); }
+    .flow-steps li { border-bottom: 1px solid var(--rule); }
+    .flow-steps button {
+      display: flex; gap: 14px; align-items: flex-start; width: 100%; text-align: left; background: none; border: 0; cursor: pointer;
+      padding: 12px 8px 12px 0; min-height: 56px; border-radius: 0;
+    }
+    .flow-steps button::before {
+      counter-increment: s; content: counter(s); flex: none; width: 2rem; font-size: 1.6rem; font-weight: 800; color: var(--accent); line-height: 1.2; text-align: center;
+    }
+    .flow-steps button:hover { background: var(--paper-2); }
+    .flow-steps button[aria-pressed="true"] { background: var(--ink); color: var(--paper); padding-left: 8px; }
+    .flow-steps button[aria-pressed="true"]::before { color: #F3B8A8; }
+    .flow-steps button[aria-pressed="true"]:focus-visible { outline-color: var(--ink); box-shadow: 0 0 0 3px var(--paper) inset; }
+    .share { display: block; height: 8px; background: var(--paper-2); min-width: 60px; }
+    .share i { display: block; height: 100%; background: var(--ink); }
+    .cost-t td, .cost-t th { font-size: .95rem; }
+    .cost-t .total th, .cost-t .total td { font-weight: 800; border-top: 2px solid var(--ink); }
+    .cost-t .total th { font-size: 1rem; }
+    @media (max-width: 719px) {
+      .cost-t thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+      .cost-t, .cost-t tbody, .cost-t tr, .cost-t th, .cost-t td { display: block; width: 100%; }
+      .cost-t tr { padding: 10px 0; border-bottom: 1px solid var(--rule); }
+      .cost-t th, .cost-t td { padding: 2px 0; border: 0; }
+      .cost-t td { display: flex; justify-content: space-between; gap: 12px; }
+      .cost-t td::before { content: attr(data-label); color: var(--ink-2); font-size: .88rem; }
+      .cost-t .r { text-align: right; padding-left: 0; }
+      .cost-t .share { display: none; }
+      .cost-t td.blank { display: none; }
+    }
+    .roadmap { margin-top: 12px; display: grid; gap: 0; grid-template-columns: 1fr; border-left: 2px solid var(--ink); }
+    .roadmap li { position: relative; padding: 0 0 20px 24px; }
+    .roadmap li::before { content: ""; position: absolute; left: -9px; top: 6px; width: 16px; height: 16px; background: var(--paper); border: 2px solid var(--ink); }
+    .roadmap li.now::before { background: var(--accent); border-color: var(--accent); }
+    .roadmap h4 { margin: 0; font-size: 1.05rem; font-weight: 800; }
+    .roadmap p { color: var(--ink-2); font-size: .95rem; }
+    .roadmap .nowtag { display: inline-block; margin-left: 8px; padding: 0 8px; background: var(--accent); color: #fff; font-size: .8rem; font-weight: 700; }
+    @media (min-width: 900px) {
+      .roadmap { grid-template-columns: repeat(3, 1fr); border-left: 0; border-top: 2px solid var(--ink); gap: 0 32px; margin-top: 20px; }
+      .roadmap li { padding: 24px 0 0; }
+      .roadmap li::before { left: 0; top: -9px; }
+    }
+
+    footer { margin-top: 64px; padding: 20px 0 120px; border-top: 2px solid var(--ink); color: var(--ink-2); font-size: .9rem; }
+    footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; align-items: center; }
+
+    /* chat */
+    .fab {
+      position: fixed; right: 16px; bottom: 16px; z-index: 50; display: inline-flex; align-items: center; gap: 8px;
+      min-height: 52px; padding: 0 20px; background: var(--ink); color: var(--paper); border: 2px solid var(--ink); border-radius: 2px; font-weight: 700; cursor: pointer;
+    }
+    .fab:hover { background: #3C352E; }
+    .chatbox {
+      position: fixed; z-index: 60; right: 16px; bottom: 16px; width: 380px; max-width: calc(100vw - 32px); height: min(560px, calc(100vh - 32px));
+      display: flex; flex-direction: column; background: var(--paper); border: 2px solid var(--ink); animation: chat-in .18s ease-out;
+    }
+    @keyframes chat-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    .chat-head { display: flex; align-items: center; gap: 8px; padding: 4px 4px 4px 14px; background: var(--ink); color: var(--paper); }
+    .chat-head h2 { font-size: 1.05rem; font-weight: 800; flex: 1; }
+    .chat-head button { min-height: 44px; min-width: 44px; background: transparent; color: var(--paper); border: 0; cursor: pointer; padding: 0 10px; font-weight: 600; }
+    .chat-head button:hover { background: #3C352E; }
+    .chat-head button:focus-visible { outline-color: var(--paper); outline-offset: -4px; }
+    .chat-demo { padding: 8px 14px; font-size: .82rem; color: var(--ink); background: var(--paper-2); border-bottom: 1px solid var(--rule); }
+    .chat-log { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: #FFFBF2; }
+    .msg { max-width: 88%; padding: 8px 12px; border: 1.5px solid var(--ink); font-size: .95rem; }
+    .msg p + p { margin-top: 4px; }
+    .msg time { display: block; margin-top: 4px; font-size: .75rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+    .msg-bot { align-self: flex-start; background: var(--paper); }
+    .msg-user { align-self: flex-end; background: var(--ink); color: var(--paper); }
+    .msg-user time { color: #D8CDB5; }
+    .msg-muted { align-self: center; border-style: dashed; border-color: var(--ink-2); color: var(--ink-2); font-size: .85rem; background: transparent; }
+    .typing { padding: 4px 14px; font-size: .85rem; color: var(--ink-2); background: #FFFBF2; display: flex; align-items: center; gap: 8px; }
+    .dots { display: inline-flex; gap: 4px; }
+    .dots i { width: 6px; height: 6px; background: var(--ink-2); border-radius: 50%; animation: blink 1s infinite ease-in-out; }
+    .dots i:nth-child(2) { animation-delay: .15s; }
+    .dots i:nth-child(3) { animation-delay: .3s; }
+    @keyframes blink { 0%, 80%, 100% { opacity: .2; } 40% { opacity: 1; } }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 14px; border-top: 1px solid var(--rule); max-height: 150px; overflow-y: auto; }
+    .chip {
+      min-height: 44px; padding: 0 12px; background: var(--paper); border: 1.5px solid var(--ink); border-radius: 2px; cursor: pointer; font-size: .9rem; font-weight: 600;
+    }
+    .chip:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--paper-2); }
+    .chip[aria-disabled="true"] { color: var(--ink-2); cursor: progress; }
+    .chip:disabled { color: var(--ink-2); border-style: dashed; cursor: not-allowed; }
+    .chat-form { display: flex; border-top: 2px solid var(--ink); }
+    .chat-form input { flex: 1; min-width: 0; min-height: 52px; padding: 0 12px; border: 0; background: #FFFBF2; font-size: 1rem; border-radius: 0; }
+    .chat-form input:focus-visible { outline-offset: -4px; }
+    .chat-form button { min-width: 52px; min-height: 52px; background: var(--ink); color: var(--paper); border: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .chat-form button:hover { background: #3C352E; }
+    .chat-form button:focus-visible { outline-color: var(--ink); outline-offset: -6px; box-shadow: inset 0 0 0 5px var(--paper); }
+    .chat-sim { border-top: 1px solid var(--rule); font-size: .85rem; padding: 0 14px; }
+    .chat-sim summary { min-height: 44px; font-size: .88rem; }
+    .chat-sim label { display: block; font-weight: 600; }
+    .chat-sim input[type="range"] { height: 44px; }
+    @media (max-width: 639px) {
+      .chatbox { inset: auto 0 0 0; width: 100%; max-width: none; height: min(85vh, 640px); height: min(85dvh, 640px); border-width: 2px 0 0; }
+      .fab[aria-expanded="true"] { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ไอคอน SVG (เส้นเดียวกันทั้งหน้า) และหัวลูกศรของแผนภาพ -->
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false">
+  <defs>
+    <marker id="arrow-ink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#221E1A"/></marker>
+    <marker id="arrow-acc" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#B5361E"/></marker>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></symbol>
+    <symbol id="i-equal" viewBox="0 0 24 24"><path d="M5 9h14M5 15h14"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.6-5.9M4 4v5h5"/></symbol>
+    <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3l10 18H2L12 3zM12 10v5M12 18v.01"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4V5z"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8-8-2z"/></symbol>
+    <symbol id="i-store" viewBox="0 0 24 24"><path d="M4 9l1.5-5h13L20 9M4 9v11h16V9M4 9c0 2.4 3 2.4 4 0 1 2.4 3 2.4 4 0 1 2.4 3 2.4 4 0 1 2.4 4 2.4 4 0M10 20v-5h4v5"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18h2"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3.5 3.5 3.5 14.500 0 18M12 3c-3.500 3.500-3.500 14.500 0 18"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></symbol>
+    <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.700 3.600 3 8 3s8-1.300 8-3V6M4 12c0 1.700 3.600 3 8 3s8-1.300 8-3"/></symbol>
+    <symbol id="i-line" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="5"/><path d="M9 18l-1 3 4-3"/></symbol>
+    <symbol id="i-gate" viewBox="0 0 24 24"><path d="M3 9h18M5 9v11M19 9v11M3 20h18M8 9V5h8v4M10 14h4"/></symbol>
+    <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3zM9 8h6M9 12h6"/></symbol>
+    <symbol id="i-basket" viewBox="0 0 24 24"><path d="M3 9h18l-2 11H5L3 9zM8 9l3-5M16 9l-3-5"/></symbol>
+  </defs>
+</svg>
+
+<a class="skip" href="#main">ข้ามไปเนื้อหาหลัก</a>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="topbar">
+      <p class="wordmark"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-receipt"/></svg>SmartBatch <small>& FreshMargin AI</small></p>
+      <nav aria-label="เมนูหลัก">
+        <ul>
+          <li><a href="#step1">วางแผน</a></li>
+          <li><a href="#aws">สถาปัตยกรรม</a></li>
+          <li><button type="button" class="linkbtn" id="navChat">ลองแชท</button></li>
+        </ul>
+      </nav>
+    </div>
+    <h1>วางแผนผลิตวันนี้ <span style="white-space:nowrap">ใน 3 นาที</span></h1>
+    <p class="lede">ใส่ราคาของวันนี้กับยอดที่คาดไว้ ระบบบอกว่าควรทำกี่ชิ้น และกำไรเสี่ยงแค่ไหน</p>
+    <div class="hero-actions">
+      <a class="btn" href="#step1">เริ่มวางแผน</a>
+      <button type="button" class="btn btn-ghost" id="heroChat"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-chat"/></svg>ลองแชทกับบอทลูกค้า (เดโม)</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="layout">
+    <aside class="rail" aria-label="สรุปแผนวันนี้">
+      <nav aria-label="ขั้นตอน">
+        <ol class="rail-steps">
+          <li><a href="#step1"><b>1</b> ราคา</a></li>
+          <li><a href="#step2"><b>2</b> ยอดขาย</a></li>
+          <li><a href="#step3"><b>3</b> ผลลัพธ์</a></li>
+        </ol>
+      </nav>
+      <div class="rail-answer">
+        <p class="rail-label">ตอนนี้แนะนำ</p>
+        <p id="railHeadline">-</p>
+      </div>
+    </aside>
+
+    <div class="steps">
+      <aside class="note" aria-label="หมายเหตุ">
+        <p><strong>หมายเหตุ:</strong> เครื่องมือช่วยตัดสินใจต้นแบบ ตัวเลขราคาและยอดขายทั้งหมดเป็นตัวอย่างเพื่อสาธิต ไม่ใช่ข้อมูลตลาดหรือยอดขายจริง ไม่ใช่คำทำนาย ร้านที่ยังไม่มีประวัติยอดขายก็ใช้ได้ เพราะคำนวณจากสิ่งที่พี่รู้ตอนเช้า</p>
+      </aside>
+
+      <!-- ขั้นที่ 1 -->
+      <section class="step" id="step1" aria-labelledby="h-step1">
+        <h2 id="h-step1"><span class="stepnum" aria-hidden="true">1</span><span>วันนี้ของแพงขึ้นไหม</span></h2>
+        <p class="hint">เทียบกับราคาอ้างอิงตัวอย่าง ไม่ใช่ราคาตลาดจริง ปรับเฉพาะของที่ซื้อมาวันนี้ ที่เหลือไม่ต้องแตะ</p>
+        <table class="ledger pricetable">
+          <caption class="sr-only">ราคาวัตถุดิบวันนี้เทียบกับราคาอ้างอิง</caption>
+          <thead>
+            <tr><th scope="col">วัตถุดิบ</th><th scope="col">อ้างอิง</th><th scope="col">ครั้งก่อน</th><th scope="col">ราคาวันนี้</th><th scope="col">เทียบอ้างอิง</th></tr>
+          </thead>
+          <tbody id="priceBody"></tbody>
+        </table>
+        <div class="actions">
+          <button type="button" class="btn btn-ghost" id="btnResetPrices"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-reset"/></svg>ใช้ราคาอ้างอิงทั้งหมด</button>
+        </div>
+        <div class="actions" role="group" aria-labelledby="presetPriceLbl">
+          <span class="lbl" id="presetPriceLbl">ลองสถานการณ์:</span>
+          <div class="seg">
+            <button type="button" class="btn btn-ghost btn-sm" data-pp="normal" aria-pressed="false">ราคาปกติ</button>
+            <button type="button" class="btn btn-ghost btn-sm" data-pp="lime_surge" aria-pressed="false">มะนาวแพง</button>
+            <button type="button" class="btn btn-ghost btn-sm" data-pp="meat_surge" aria-pressed="false">หมูพุ่ง</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ขั้นที่ 2 -->
+      <section class="step" id="step2" aria-labelledby="h-step2">
+        <h2 id="h-step2"><span class="stepnum" aria-hidden="true">2</span><span>วันนี้คาดว่าขายได้เท่าไร</span></h2>
+        <p class="hint">ใส่เฉพาะที่รู้ตอนเช้า ไม่ต้องมีประวัติยอดขาย</p>
+        <div class="field">
+          <label for="menuSelect">เมนูที่จะทำ</label>
+          <select id="menuSelect"></select>
+        </div>
+        <fieldset class="presets">
+          <legend>วันนี้เป็นวันแบบไหน</legend>
+          <div class="seg">
+            <button type="button" class="btn btn-ghost btn-sm" data-dp="weekday" aria-pressed="false">วันธรรมดา</button>
+            <button type="button" class="btn btn-ghost btn-sm" data-dp="holiday" aria-pressed="false">วันหยุด</button>
+            <button type="button" class="btn btn-ghost btn-sm" data-dp="office" aria-pressed="false">มีออเดอร์ออฟฟิศ</button>
+          </div>
+        </fieldset>
+        <div class="grid-fields" id="planFields"></div>
+        <fieldset class="field">
+          <legend>1 รอบ/ถาด ทำได้กี่ชิ้น</legend>
+          <div class="radios" id="batchRadios">
+            <label class="radio"><input type="radio" name="batch" value="12"><span>12 ชิ้น</span></label>
+            <label class="radio"><input type="radio" name="batch" value="24"><span>24 ชิ้น</span></label>
+            <label class="radio"><input type="radio" name="batch" value="50"><span>50 ชิ้น</span></label>
+          </div>
+          <p class="help">ระบบปัดจำนวนผลิตให้ตรงกับรอบจริงเสมอ ไม่ให้เศษที่ทำไม่ได้</p>
+        </fieldset>
+        <details class="adv" id="adv">
+          <summary><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-chevron"/></svg>ตั้งค่าเพิ่มเติม (ไม่ต้องแตะก็ได้)</summary>
+          <div class="adv-fields" id="advFields"></div>
+          <p class="help" id="trimNote"></p>
+        </details>
+      </section>
+
+      <!-- ขั้นที่ 3 -->
+      <section class="step" id="step3" aria-labelledby="h-step3">
+        <h2 id="h-step3"><span class="stepnum" aria-hidden="true">3</span><span>ผลลัพธ์: วันนี้ควรทำเท่าไร</span></h2>
+        <div class="ticket">
+          <p class="ticket-label">แผนที่เลือก: <span id="ticketPlan"></span> · <span id="ticketMenu"></span></p>
+          <p id="headlineAnswer" class="headline" aria-live="polite">-</p>
+          <p id="headlineSub" class="headline-sub"></p>
+          <hr class="dash">
+          <div id="marginBanner" class="banner ok" role="status"></div>
+        </div>
+
+        <h3>เทียบ 3 แผน</h3>
+        <div class="tablewrap">
+          <table class="ledger cmp" id="cmpTable">
+            <caption class="sr-only">เทียบ 3 แผนการผลิต</caption>
+            <thead id="cmpHead"></thead>
+            <tbody id="cmpBody"></tbody>
+          </table>
+        </div>
+        <p class="hint" id="cmpNote"></p>
+        <p class="hint">คาดการณ์โดยสมมติว่าลูกค้าหน้าร้านมาจริงราว 70% ของที่คาดไว้ (สมมติฐาน ไม่ใช่ข้อมูลจริง) ต้นทุนของเหลือจากเมื่อวานไม่นับซ้ำ</p>
+
+        <h3>กำไรต่อจานของแต่ละเมนู</h3>
+        <table class="ledger stack" id="marginTable">
+          <caption class="sr-only">กำไรต่อจานของแต่ละเมนู เทียบกับเป้า</caption>
+          <thead>
+            <tr><th scope="col">เมนู</th><th scope="col" class="r">ต้นทุน/จาน</th><th scope="col" class="r">กำไรหน้าร้าน</th><th scope="col" class="r" id="thDeliv">กำไรเดลิเวอรี่</th><th scope="col">สถานะ</th></tr>
+          </thead>
+          <tbody id="marginBody"></tbody>
+        </table>
+
+        <details class="why" id="whyDetails">
+          <summary><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-chevron"/></svg>ทำไมถึงได้ตัวเลขนี้</summary>
+          <div class="why-body" id="whyBody"></div>
+        </details>
+
+        <section class="waste" id="wasteBlock" aria-labelledby="h-waste">
+          <h3 id="h-waste">หลังปิดรอบ: ของเหลือ</h3>
+          <p class="hint">จดของที่ขายไม่หมด เพื่อรู้ว่าเงินจมไปเท่าไร</p>
+          <div class="waste-grid">
+            <div class="field" id="wasteField"></div>
+            <div class="field">
+              <p class="lbl" style="font-weight:700">เงินจมในถังขยะ</p>
+              <p class="big risk"><output id="wasteCost" for="in-waste">0 ฿</output></p>
+              <p class="help">เท่ากับต้นทุนวัตถุดิบและค่าทำที่สูญเปล่า</p>
+            </div>
+          </div>
+          <p id="wasteRec" class="st" style="margin-top:12px"></p>
+          <div class="actions">
+            <button type="button" class="btn" id="btnLogWaste">บันทึกของเหลือวันนี้</button>
+            <p id="wasteStatus" role="status" class="help"></p>
+          </div>
+        </section>
+      </section>
+    </div>
+  </div>
+
+  <!-- สถาปัตยกรรม AWS -->
+  <section id="aws" class="wrap" aria-labelledby="awsTitle">
+    <h2 id="awsTitle">สถาปัตยกรรมคลาวด์ AWS สำหรับ SME</h2>
+    <p class="aws-intro">ระบบนี้จ่ายตามที่ใช้จริง ไม่มีเครื่องเปิดทิ้งไว้ ร้านหนึ่งร้านใช้ราวไม่เกิน $0.50 ต่อเดือน (ประมาณการ) แตะกล่องในแผนภาพหรือขั้นตอนด้านล่าง เพื่อดูว่าแต่ละส่วนทำอะไร</p>
+    <div class="arch" id="archWrap" role="group" aria-label="แผนภาพการทำงานของระบบบน AWS"></div>
+    <div class="legend-line" aria-hidden="true">
+      <span>เส้นประที่กรอบ = ต่อยอดในระยะที่ 2</span>
+    </div>
+    <p class="tisp">ข้อมูลแต่ละร้านแยกกัน ร้านหนึ่งไม่เห็นข้อมูลของอีกร้าน</p>
+    <div class="arch-detail" id="archDetail" aria-live="polite"></div>
+
+    <h3>ข้อมูลไหลยังไง</h3>
+    <ol class="flow-steps" id="flowSteps"></ol>
+
+    <h3>ค่าใช้จ่ายต่อเดือนต่อ 1 ร้าน</h3>
+    <table class="ledger cost-t">
+      <caption class="sr-only">ค่าใช้จ่ายต่อเดือนต่อ 1 ร้าน (ประมาณการ ตัวเลขตัวอย่าง)</caption>
+      <thead>
+        <tr><th scope="col">บริการ</th><th scope="col">ทำหน้าที่เหมือน</th><th scope="col" class="share-cell">สัดส่วน</th><th scope="col" class="r">≈ USD</th><th scope="col" class="r">≈ บาท</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">CloudFront + S3</th><td data-label="ทำหน้าที่เหมือน">ป้ายหน้าร้าน</td><td data-label="สัดส่วน" class="share-cell"><span class="num">15%</span><span class="share" aria-hidden="true"><i style="width:15%"></i></span></td><td class="r num" data-label="≈ USD">$0.075</td><td class="r num" data-label="≈ บาท">2.7</td></tr>
+        <tr><th scope="row">API Gateway</th><td data-label="ทำหน้าที่เหมือน">เคาน์เตอร์รับเรื่อง</td><td data-label="สัดส่วน" class="share-cell"><span class="num">20%</span><span class="share" aria-hidden="true"><i style="width:20%"></i></span></td><td class="r num" data-label="≈ USD">$0.100</td><td class="r num" data-label="≈ บาท">3.6</td></tr>
+        <tr><th scope="row">AWS Lambda</th><td data-label="ทำหน้าที่เหมือน">พนักงานมาทำงานตอนมีคนเรียก</td><td data-label="สัดส่วน" class="share-cell"><span class="num">10%</span><span class="share" aria-hidden="true"><i style="width:10%"></i></span></td><td class="r num" data-label="≈ USD">$0.050</td><td class="r num" data-label="≈ บาท">1.8</td></tr>
+        <tr><th scope="row">DynamoDB</th><td data-label="ทำหน้าที่เหมือน">สมุดจดสูตรและยอดขาย</td><td data-label="สัดส่วน" class="share-cell"><span class="num">15%</span><span class="share" aria-hidden="true"><i style="width:15%"></i></span></td><td class="r num" data-label="≈ USD">$0.075</td><td class="r num" data-label="≈ บาท">2.7</td></tr>
+        <tr><th scope="row">Bedrock</th><td data-label="ทำหน้าที่เหมือน">ผู้ช่วยอ่านใบเสร็จ</td><td data-label="สัดส่วน" class="share-cell"><span class="num">40%</span><span class="share" aria-hidden="true"><i style="width:40%"></i></span></td><td class="r num" data-label="≈ USD">$0.200</td><td class="r num" data-label="≈ บาท">7.2</td></tr>
+        <tr class="total"><th scope="row">รวมต่อเดือน (ไม่เกิน)</th><td class="blank"></td><td data-label="สัดส่วน" class="share-cell num">100%</td><td class="r num" data-label="≈ USD">$0.50</td><td class="r num" data-label="≈ บาท">18</td></tr>
+      </tbody>
+    </table>
+    <p class="hint">ประมาณการ $0.15-0.50 ต่อเดือน (≈ 5-18 บาท) เมื่อใช้งานวันละ 20-50 ครั้ง ตามเอกสาร README ตัวเลขสมมติเพื่อสาธิต ไม่ใช่ใบแจ้งหนี้ AWS ใช้เรท 36 บาทต่อดอลลาร์ (สมมติ) สัดส่วนต่อบริการเป็นการแบ่งตัวอย่าง ยังไม่รวมแชทลูกค้า ถ้าลูกค้าถามเยอะ ค่า Bedrock จะเพิ่มตามจำนวนข้อความ</p>
+
+    <h3>จะขยายต่อยังไง</h3>
+    <ol class="roadmap">
+      <li class="now"><h4>ระยะที่ 1 ต้นแบบ<span class="nowtag">ตอนนี้</span></h4><p>CloudFront + S3 ทดลองกับร้านอาหาร 10 ร้านในชุมชน</p></li>
+      <li><h4>ระยะที่ 2 LINE OA + Bedrock อ่านใบเสร็จ</h4><p>ส่งรูปบิลผ่าน LINE ระบบคำนวณตอบกลับ และมีแชทตอบลูกค้า</p></li>
+      <li><h4>ระยะที่ 3 เทียบราคาตลาดร่วมกัน</h4><p>รวมแนวโน้มราคาแต่ละย่าน แล้วแจ้งเตือนล่วงหน้าเมื่อของแนวโน้มแพงขึ้น</p></li>
+    </ol>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>SmartBatch & FreshMargin AI ต้นแบบเพื่อสาธิต ตัวเลขทั้งหมดเป็นตัวอย่าง ข้อมูลที่กรอกเก็บในเบราว์เซอร์เครื่องนี้เท่านั้น</p>
+    <button type="button" class="linkbtn" id="btnClearData">ล้างข้อมูลที่บันทึกไว้</button>
+  </div>
+</footer>
+
+<!-- แชทลูกค้า (เดโมจำลอง) -->
+<button type="button" class="fab" id="chatFab" aria-expanded="false" aria-controls="chatPanel" aria-label="เปิดแชทถามร้าน (เดโมสำหรับลูกค้า)">
+  <svg class="ic" aria-hidden="true" focusable="false"><use href="#i-chat"/></svg><span>ถามร้าน</span>
+</button>
+<section class="chatbox" id="chatPanel" role="dialog" aria-modal="false" aria-labelledby="chatTitle" hidden>
+  <div class="chat-head on-ink">
+    <h2 id="chatTitle">แชทลูกค้า (เดโม)</h2>
+    <button type="button" id="chatClear">ล้างแชท</button>
+    <button type="button" id="chatClose" aria-label="ปิดแชท"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-close"/></svg></button>
+  </div>
+  <p class="chat-demo">เดโมจำลองในหน้านี้ ไม่มีเซิร์ฟเวอร์ ของจริงจะใช้ Amazon Bedrock ผ่าน Lambda + LINE OA</p>
+  <div class="chat-log" id="chatLog" role="log" aria-live="polite" aria-relevant="additions" tabindex="0" aria-label="ข้อความในแชท"></div>
+  <div class="typing" id="chatTyping" hidden><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span>ร้านกำลังพิมพ์…</span></div>
+  <div class="chips" id="chatChips" role="group" aria-label="ตัวอย่างคำถาม"></div>
+  <details class="chat-sim">
+    <summary><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-chevron"/></svg>ปรับเดโม</summary>
+    <label for="chatProgress">ขายไปแล้วประมาณ <output id="chatProgressVal">40</output>% ของยอดหน้าร้านที่คาดไว้</label>
+    <input type="range" id="chatProgress" min="0" max="100" step="10" value="40">
+  </details>
+  <form class="chat-form" id="chatForm" autocomplete="off">
+    <label for="chatInput" class="sr-only">พิมพ์ข้อความถึงร้าน</label>
+    <input id="chatInput" type="text" maxlength="200" autocomplete="off" enterkeyhint="send" placeholder="พิมพ์ถามร้านได้เลย เช่น ราคาครัวซองต์">
+    <button type="submit" id="chatSend" aria-label="ส่งข้อความ"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-send"/></svg></button>
+  </form>
+</section>
+
+<script>
+/* ============================================================
+   CORE: ข้อมูลสูตร + ตรรกะคำนวณล้วน ๆ (ไม่แตะ DOM / localStorage)
+   ============================================================ */
+/* CORE:BEGIN */
+const BENCHMARK = { lime: 3.5, pork: 180, egg: 4.2, butter: 260 };
+
+const RECIPES = {
+  pork_rice: {
+    name: 'ข้าวหมูกรอบคั่วพริกเกลือ', short: 'ข้าวหมูกรอบ', unitWord: 'จาน', trayWord: 'รอบ', fixed: 10,
+    lines: [{ ing: 'pork', qty: 0.12, trim: true }, { ing: 'egg', qty: 0.5 }, { ing: 'lime', qty: 0.2 }],
+    aliases: ['ข้าวหมู', 'หมูกรอบ', 'ข้าวหมูกรอบ', 'คั่วพริกเกลือ', 'ข้าวกล่อง'],
+    allergens: 'มีหมู ไข่ และเครื่องปรุงที่อาจมีถั่วเหลืองหรือปลา',
+    shelf: 'ควรกินภายในวันเดียวกัน เก็บเกิน 4 ชั่วโมงให้แช่เย็นและอุ่นก่อนกิน'
+  },
+  croissant: {
+    name: 'ครัวซองต์เนยสดพรีเมียม', short: 'ครัวซองต์', unitWord: 'ชิ้น', trayWord: 'ถาด', fixed: 7,
+    lines: [{ ing: 'butter', qty: 0.045 }, { ing: 'egg', qty: 0.3 }],
+    aliases: ['ครัวซอง', 'ครัวซองต์', 'ครอซอง', 'croissant', 'ขนมปัง', 'เบเกอรี่'],
+    allergens: 'มีแป้งสาลี (กลูเตน) เนยนม และไข่',
+    shelf: 'อยู่ได้ 1-2 วันที่อุณหภูมิห้อง แช่เย็นได้ 3 วัน อุ่นเตาอบ 160 องศา 5 นาที'
+  },
+  tomyum: {
+    name: 'ต้มยำกุ้งน้ำข้น', short: 'ต้มยำกุ้ง', unitWord: 'ถุง', trayWord: 'หม้อ', fixed: 35,
+    lines: [{ ing: 'lime', qty: 3.0 }, { ing: 'egg', qty: 0.2 }],
+    aliases: ['ต้มยำ', 'ต้มยำกุ้ง', 'กุ้ง', 'น้ำข้น', 'tomyum', 'ซุป'],
+    allergens: 'มีกุ้ง (สัตว์น้ำเปลือกแข็ง) นมข้น และน้ำปลา',
+    shelf: 'กินวันเดียวกัน หรือแช่เย็นไม่เกิน 1 วัน อุ่นให้เดือดก่อนกิน'
+  }
+};
+
+// ข้อมูลร้านสมมติสำหรับเดโม (ไม่ใช่ที่อยู่หรือเบอร์จริง)
+const SHOP = {
+  name: 'ร้านพี่เล็ก (ตัวอย่าง)', open: '06:30', close: '16:00', closedDay: 'วันอาทิตย์',
+  where: 'ซอยตัวอย่าง ย่านออฟฟิศ (ข้อมูลสมมติ)', pickup: 'รับเองที่ร้าน หรือสั่งผ่านแอปเดลิเวอรี่'
+};
+
+const Core = (() => {
+  const SCENARIOS = { A: { k: 0, label: 'เซฟ' }, B: { k: 0.6, label: 'สมดุล' }, C: { k: 1, label: 'รุก' } };
+  const REALIZATION = 0.7; // สมมติ: ลูกค้าหน้าร้านมาจริงราว 70% ของที่คาดไว้
+
+  // ตรวจและจำกัดค่าตัวเลข ไม่คืน NaN/Infinity เด็ดขาด
+  function sanitize(raw, o) {
+    o = o || {};
+    const min = o.min == null ? 0 : o.min;
+    const max = o.max == null ? 999999 : o.max;
+    const fb = o.fallback == null ? min : o.fallback;
+    const bad = { value: fb, ok: false, msg: 'กรอกเป็นตัวเลขนะ ตอนนี้ใช้ค่าเดิมให้ก่อน' };
+    if (raw === null || raw === undefined || String(raw).trim() === '') return bad;
+    const n = typeof raw === 'number' ? raw : Number(String(raw).trim().replace(/,/g, ''));
+    if (!Number.isFinite(n)) return bad;
+    let v = o.int ? Math.round(n) : n;
+    let msg = '';
+    if (v < min) { msg = (n < 0 && min === 0) ? 'ใส่ค่าติดลบไม่ได้ ปรับเป็น 0 ให้แล้ว' : 'ต่ำสุด ' + min + ' ปรับให้แล้ว'; v = min; }
+    else if (v > max) { msg = 'มากสุด ' + max + ' ปรับให้แล้ว'; v = max; }
+    return { value: v, ok: true, msg: msg };
+  }
+
+  // สูตรใน README: max(0, ceil((จอง + เป้าหน้าร้าน - ของเหลือ) / ขนาดรอบ) * ขนาดรอบ)
+  function targetProduction(pre, targetWalk, stock, batch) {
+    if (!(batch > 0)) return 0;
+    return Math.max(0, Math.ceil((pre + targetWalk - stock) / batch) * batch);
+  }
+
+  function rawCost(menuId, prices, trimLossPct) {
+    const loss = Math.min(Math.max(trimLossPct || 0, 0), 60) / 100;
+    return RECIPES[menuId].lines.reduce((sum, ln) => {
+      const base = prices[ln.ing] * ln.qty;
+      return sum + (ln.trim ? base / (1 - loss) : base);
+    }, 0);
+  }
+  function unitCost(menuId, prices, cfg) { return rawCost(menuId, prices, cfg.trimLossPct) + RECIPES[menuId].fixed; }
+
+  function margins(unit, cfg, gpPct) {
+    const storeProfit = cfg.sellPrice - unit;
+    const deliveryNet = cfg.deliveryPrice * (1 - gpPct / 100);
+    const deliveryProfit = deliveryNet - unit;
+    return {
+      storeProfit: storeProfit,
+      storePct: storeProfit / cfg.sellPrice * 100,
+      deliveryNet: deliveryNet,
+      deliveryProfit: deliveryProfit,
+      deliveryPct: deliveryNet > 0 ? deliveryProfit / deliveryNet * 100 : -100
+    };
+  }
+  function marginStatus(pct, target) { return pct < target ? 'low' : (pct < target + 10 ? 'watch' : 'ok'); }
+
+  function scenario(key, plan, unit, sellPrice) {
+    const k = SCENARIOS[key].k;
+    const targetWalk = Math.round(plan.walk * k);
+    const need = plan.pre + targetWalk - plan.stock;
+    const P = targetProduction(plan.pre, targetWalk, plan.stock, plan.batch);
+    const available = P + plan.stock;
+    const demand = plan.pre + Math.round(plan.walk * REALIZATION);
+    const sold = Math.min(available, demand);
+    const revenue = sold * sellPrice;
+    const prodCost = P * unit;
+    const soldFromNew = Math.max(0, sold - plan.stock);
+    return {
+      key: key, k: k, targetWalk: targetWalk, need: need, P: P, batches: plan.batch > 0 ? P / plan.batch : 0,
+      available: available, demand: demand, sold: sold, revenue: revenue, prodCost: prodCost,
+      profit: revenue - prodCost, soldFromNew: soldFromNew, atRisk: (P - soldFromNew) * unit,
+      lost: Math.max(0, demand - available), breakEvenUnits: P > 0 ? Math.ceil(prodCost / sellPrice) : 0
+    };
+  }
+
+  // state เดียว -> ตัวเลขทุกอย่างที่ UI และแชทบอทใช้
+  function derive(st) {
+    const menus = {};
+    Object.keys(RECIPES).forEach((id) => {
+      const cfg = st.menuCfg[id], plan = st.plans[id];
+      const raw = rawCost(id, st.prices, cfg.trimLossPct);
+      const unit = raw + RECIPES[id].fixed;
+      const mg = margins(unit, cfg, st.gpPct);
+      const scen = {
+        A: scenario('A', plan, unit, cfg.sellPrice),
+        B: scenario('B', plan, unit, cfg.sellPrice),
+        C: scenario('C', plan, unit, cfg.sellPrice)
+      };
+      const chosen = scen[st.scenario];
+      const available = chosen.P + plan.stock;
+      const soldSim = Math.min(available, plan.pre + Math.round(plan.walk * st.chat.progress));
+      menus[id] = {
+        raw: raw, unit: unit, margins: mg,
+        status: marginStatus(mg.storePct, st.targetMarginPct),
+        deliveryStatus: marginStatus(mg.deliveryPct, st.targetMarginPct),
+        scen: scen, chosen: chosen, available: available, soldSim: soldSim,
+        remaining: Math.max(0, available - soldSim)
+      };
+    });
+    const priceDelta = {};
+    Object.keys(BENCHMARK).forEach((k) => {
+      priceDelta[k] = { abs: st.prices[k] - BENCHMARK[k], pct: (st.prices[k] - BENCHMARK[k]) / BENCHMARK[k] * 100 };
+    });
+    return { menus: menus, active: menus[st.menuId], priceDelta: priceDelta };
+  }
+
+  return { SCENARIOS: SCENARIOS, REALIZATION: REALIZATION, sanitize: sanitize, targetProduction: targetProduction,
+           rawCost: rawCost, unitCost: unitCost, margins: margins, marginStatus: marginStatus, scenario: scenario, derive: derive };
+})();
+/* CORE:END */
+
+/* ============================================================
+   BOT: ตัวจับเจตนาภาษาไทยแบบคำสำคัญ (ล้วน ๆ ไม่แตะ DOM)
+   ============================================================ */
+/* BOT:BEGIN */
+const BotNLU = (() => {
+  // ตัดวรรณยุกต์/ทัณฑฆาต เลขไทย ช่องว่าง เครื่องหมาย และตัวอักษรซ้ำ 3 ตัวขึ้นไป
+  function normalize(s) {
+    s = String(s == null ? '' : s).slice(0, 200).normalize('NFC').toLowerCase();
+    s = s.replace(/[\u0E50-\u0E59]/g, (c) => String(c.charCodeAt(0) - 0x0E50));
+    s = s.replace(/[\u0E48-\u0E4C]/g, '');
+    s = s.replace(/[\u200B-\u200D\uFEFF]/g, '');
+    s = s.replace(/[\s\u00A0]+/g, '');
+    s = s.replace(/[!-\/:-@\[-`{-~\u2000-\u206F\u3000-\u303F\u201C\u201D\u2018\u2019\u2026\u0E46\u0E2F]/g, '');
+    s = s.replace(/([^\d])\1{2,}/g, '$1');
+    return s;
+  }
+
+  const DEFS = [
+    { id: 'human', prio: 100, kw: ['คุยกับคน', 'คุยกับเจ้าของ', 'เจ้าของร้าน', 'แอดมิน', 'พนักงาน', 'ขอคนจริง', 'ไม่ใช่บอท', 'ติดต่อร้าน', 'โทร', 'ร้องเรียน', 'human', 'admin'] },
+    { id: 'allergen', prio: 60, kw: ['แพ้อาหาร', 'แพ้ถั่ว', 'แพ้นม', 'แพ้ไข่', 'แพ้กุ้ง', 'แพ้แป้ง', 'แพ้อะไร', 'ส่วนผสม', 'วัตถุดิบ', 'ผสมอะไร', 'ถั่วไหม', 'กลูเตน', 'แป้งสาลี', 'มีนมไหม', 'มีไข่ไหม', 'มีกุ้งไหม', 'ฮาลาล', 'มังสวิรัติ', 'อาหารเจ', 'allergen', 'ingredient'] },
+    { id: 'shelf', prio: 55, kw: ['เก็บได้กี่วัน', 'เก็บได้นาน', 'อยู่ได้กี่วัน', 'อายุการเก็บ', 'หมดอายุ', 'วันหมดอายุ', 'แช่เย็น', 'แช่ตู้เย็น', 'เก็บยังไง', 'เก็บไว้', 'ข้ามคืน', 'อุ่นยังไง', 'อุ่น', 'shelf'] },
+    { id: 'stock', prio: 50, kw: ['หมดยัง', 'หมดไหม', 'หมดหรือยัง', 'หมดแล้วหรือยัง', 'หมดมั้ย', 'เหลือกี่', 'เหลือเท่าไร', 'เหลือเท่าไหร่', 'เหลืออีก', 'เหลือไหม', 'เหลือมั้ย', 'ยังมีไหม', 'ยังมีมั้ย', 'ยังมีอยู่ไหม', 'ทันไหม', 'มีของไหม', 'สต็อก', 'sold out', 'stock'] },
+    { id: 'preorder', prio: 45, kw: ['สั่ง', 'ขอสั่ง', 'อยากสั่ง', 'จอง', 'พรีออเดอร์', 'preorder', 'pre-order', 'ซื้อ', 'อยากได้', 'ขอซื้อ', 'ขอเอา'] },
+    { id: 'price', prio: 40, kw: ['ราคา', 'เท่าไหร่', 'เท่าไร', 'กี่บาท', 'กี่บ', 'กี่ตังค์', 'ตังค์', 'price', 'how much'] },
+    { id: 'hours', prio: 35, kw: ['เปิดกี่โมง', 'ปิดกี่โมง', 'เปิดไหม', 'ปิดไหม', 'เวลาเปิด', 'เวลาทำการ', 'เปิดทำการ', 'กี่โมง', 'วันหยุด', 'หยุดไหม', 'hours', 'open'] },
+    { id: 'location', prio: 35, kw: ['อยู่ไหน', 'ที่อยู่', 'ที่ตั้ง', 'พิกัด', 'แผนที่', 'ร้านอยู่', 'ส่งไหม', 'ส่งถึง', 'จัดส่ง', 'เดลิเวอรี่', 'delivery', 'ค่าส่ง', 'ส่งฟรี', 'แกร็บ', 'grab', 'ไลน์แมน', 'lineman', 'ช็อปปี้ฟู้ด', 'รับเอง'] },
+    { id: 'menu', prio: 30, kw: ['เมนู', 'menu', 'วันนี้มีอะไร', 'มีอะไรบ้าง', 'มีอะไรขาย', 'ขายอะไร', 'แนะนำ', 'ของวันนี้', 'รายการอาหาร', 'มีขนมอะไร'] },
+    { id: 'thanks', prio: 20, kw: ['ขอบคุณ', 'ขอบใจ', 'ขอบคุน', 'thx', 'thanks', 'thank', 'บาย', 'ไว้เจอกัน'] },
+    { id: 'greet', prio: 10, kw: ['สวัสดี', 'หวัดดี', 'ดีครับ', 'ดีค่ะ', 'ดีจ้า', 'hello', 'hi', 'เฮลโล'] }
+  ];
+  DEFS.forEach((d) => {
+    d.keys = d.kw.map((raw) => ({ raw: raw.toLowerCase(), n: normalize(raw), short: /^[a-z]{1,3}$/.test(raw) }));
+  });
+
+  const NUMW = { 'หนึง': 1, 'สอง': 2, 'สาม': 3, 'สี': 4, 'หา': 5, 'หก': 6, 'เจ็ด': 7, 'เจด': 7, 'แปด': 8, 'เก้า': 9, 'เกา': 9, 'สิบ': 10 };
+
+  function detectItem(norm) {
+    let best = null, bestLen = 0;
+    Object.keys(RECIPES).forEach((id) => {
+      const r = RECIPES[id];
+      [r.short, r.name].concat(r.aliases).forEach((a) => {
+        const n = normalize(a);
+        if (n && norm.indexOf(n) !== -1 && n.length > bestLen) { best = id; bestLen = n.length; }
+      });
+    });
+    return best;
+  }
+
+  // คืนจำนวนเต็ม (-1 = ติดลบ) หรือ null ถ้าอ่านไม่ได้ strict = อนุญาตเลขโดด ๆ และคำเลขไทยล้วน
+  function parseQty(raw, strict) {
+    const text = String(raw == null ? '' : raw);
+    if (/-\s*\d/.test(text)) return -1;
+    const norm = normalize(text);
+    const unit = '(ชิน|จาน|ถุง|ถาด|หมอ|กลอง|อัน|ที)';
+    let m = norm.match(new RegExp('(\\d+)' + unit));
+    if (m) return Math.min(parseInt(m[1], 10), 99);
+    m = norm.match(new RegExp('(' + Object.keys(NUMW).join('|') + ')' + unit));
+    if (m) return NUMW[m[1]];
+    if (strict) {
+      if (Object.prototype.hasOwnProperty.call(NUMW, norm)) return NUMW[norm];
+      m = norm.match(/\d+/);
+      if (m) return Math.min(parseInt(m[0], 10), 99);
+      return null;
+    }
+    m = norm.match(/\d{1,2}(?!\d)/);
+    return m ? Math.min(parseInt(m[0], 10), 99) : null;
+  }
+
+  function classify(text) {
+    const raw = String(text == null ? '' : text).slice(0, 200);
+    const norm = normalize(raw);
+    const tokens = raw.toLowerCase().split(/[^a-z]+/).filter(Boolean);
+    const itemId = detectItem(norm);
+    const qty = parseQty(raw, false);
+    let best = null;
+    if (norm) {
+      DEFS.forEach((d) => {
+        let score = 0; const matched = [];
+        d.keys.forEach((k) => {
+          if (!k.n) return;
+          const hit = k.short ? tokens.indexOf(k.raw) !== -1 : norm.indexOf(k.n) !== -1;
+          if (hit && matched.indexOf(k.n) === -1) { matched.push(k.n); score += k.n.length; }
+        });
+        if (!score) return;
+        const cand = { intent: d.id, score: score, prio: d.prio, matched: matched };
+        if (d.id === 'human') { best = cand; return; }
+        if (best && best.intent === 'human') return;
+        if (!best || cand.score > best.score || (cand.score === best.score && cand.prio > best.prio)) best = cand;
+      });
+    }
+    if (!best && itemId && qty > 0 && /ชิน|จาน|ถุง|ถาด/.test(norm)) best = { intent: 'preorder', score: 1, prio: 45, matched: [] };
+    if (!best) return { intent: 'fallback', itemId: itemId, qty: null, score: 0, matched: [] };
+    return { intent: best.intent, itemId: itemId, qty: qty > 0 ? qty : null, score: best.score, matched: best.matched };
+  }
+
+  return { normalize: normalize, detectItem: detectItem, parseQty: parseQty, classify: classify };
+})();
+/* BOT:END */
+
+/* ============================================================
+   APP: state เดียว -> derive -> render + แชทบอท
+   ============================================================ */
+(function () {
+  'use strict';
+
+  const STORAGE_KEY = 'sb.state.v2';
+  const WASTE_LOG_KEY = 'sb.wasteLog.v1';
+
+  const ING = [
+    { id: 'lime', name: 'มะนาว', unit: 'บาท/ลูก', min: 1, max: 10, step: 0.5, dec: 2, note: 'ปกติราว 2.50 ช่วงแล้งอาจพุ่งถึง 9 บาท' },
+    { id: 'pork', name: 'หมูสามชั้น', unit: 'บาท/กก.', min: 130, max: 250, step: 5, dec: 0, note: 'ขึ้นลงตามรอบสัปดาห์' },
+    { id: 'egg', name: 'ไข่ไก่เบอร์ 2', unit: 'บาท/ฟอง', min: 3, max: 6, step: 0.2, dec: 2, note: 'ตามราคาหน้าฟาร์ม' },
+    { id: 'butter', name: 'เนยสดแท้', unit: 'บาท/กก.', min: 180, max: 380, step: 10, dec: 0, note: 'สำหรับสายเบเกอรี่/คาเฟ่' }
+  ];
+  const ING_NAME = { lime: 'มะนาว', pork: 'หมูดิบ', egg: 'ไข่', butter: 'เนย' };
+  const PRICE_PRESETS = {
+    normal: { lime: 3.5, pork: 180, egg: 4.2, butter: 260 },
+    lime_surge: { lime: 9, pork: 185, egg: 4.5, butter: 270 },
+    meat_surge: { lime: 4, pork: 240, egg: 5.2, butter: 320 }
+  };
+  const DAY_PRESETS = {
+    weekday: { pre: 12, walk: 30, stock: 4 },
+    holiday: { pre: 8, walk: 50, stock: 0 },
+    office: { pre: 40, walk: 20, stock: 4 }
+  };
+  const BATCHES = [12, 24, 50];
+
+  function defaults() {
+    return {
+      v: 2,
+      menuId: 'pork_rice',
+      prices: Object.assign({}, BENCHMARK),
+      plans: {
+        pork_rice: { pre: 28, walk: 35, stock: 6, batch: 24 },
+        croissant: { pre: 20, walk: 30, stock: 5, batch: 24 },
+        tomyum: { pre: 6, walk: 10, stock: 2, batch: 12 }
+      },
+      menuCfg: {
+        pork_rice: { sellPrice: 65, deliveryPrice: 89, trimLossPct: 25 },
+        croissant: { sellPrice: 55, deliveryPrice: 79, trimLossPct: 0 },
+        tomyum: { sellPrice: 150, deliveryPrice: 199, trimLossPct: 0 }
+      },
+      gpPct: 30,
+      targetMarginPct: 40,
+      scenario: 'B',
+      wasteQty: 4,
+      chat: { progress: 0.4 }
+    };
+  }
+
+  const state = defaults();
+  let lastKnown = Object.assign({}, BENCHMARK);
+  let derived = Core.derive(state);
+
+  /* ---------- helpers ---------- */
+  const $ = (id) => document.getElementById(id);
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs) {
+    const node = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach((k) => {
+      const v = attrs[k];
+      if (v === null || v === undefined || v === false) return;
+      if (k === 'class') node.className = v;
+      else if (k === 'text') node.textContent = v;
+      else node.setAttribute(k, v === true ? '' : String(v));
+    });
+    for (let i = 2; i < arguments.length; i++) append(node, arguments[i]);
+    return node;
+  }
+  function append(node, kid) {
+    if (kid === null || kid === undefined || kid === false) return;
+    if (Array.isArray(kid)) kid.forEach((k) => append(node, k));
+    else node.appendChild(typeof kid === 'object' ? kid : document.createTextNode(String(kid)));
+  }
+  function icon(name, cls) {
+    const s = document.createElementNS(SVGNS, 'svg');
+    s.setAttribute('class', 'ic' + (cls ? ' ' + cls : ''));
+    s.setAttribute('aria-hidden', 'true');
+    s.setAttribute('focusable', 'false');
+    const u = document.createElementNS(SVGNS, 'use');
+    u.setAttribute('href', '#i-' + name);
+    s.appendChild(u);
+    return s;
+  }
+  const nf0 = (n) => Math.round(n).toLocaleString('en-US');
+  const baht = (n) => (Math.round(n) < 0 ? '−' : '') + Math.abs(Math.round(n)).toLocaleString('en-US') + ' ฿';
+  const baht1 = (n) => n.toFixed(1) + ' ฿';
+  const pct1 = (n) => n.toFixed(1) + '%';
+  const round2 = (n) => Math.round(n * 100) / 100;
+  const plan = () => state.plans[state.menuId];
+  const recipe = () => RECIPES[state.menuId];
+  const hasOwn = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+
+  /* ---------- บันทึก / โหลด ---------- */
+  let saveTimer = null;
+  function scheduleSave() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* โหมดส่วนตัว/เต็ม: ใช้งานต่อได้ ไม่บันทึก */ }
+    }, 200);
+  }
+  function loadState() {
+    let raw = null;
+    try { raw = localStorage.getItem(STORAGE_KEY); } catch (e) { return null; }
+    if (!raw) return null;
+    let o;
+    try { o = JSON.parse(raw); } catch (e) { return null; }
+    if (!o || typeof o !== 'object') return null;
+    const s = defaults();
+    const num = (v, min, max, fb, int) => Core.sanitize(v, { min: min, max: max, fallback: fb, int: int }).value;
+    if (typeof o.menuId === 'string' && hasOwn(RECIPES, o.menuId)) s.menuId = o.menuId;
+    ING.forEach((g) => { s.prices[g.id] = num(o.prices && o.prices[g.id], g.min, g.max, s.prices[g.id]); });
+    Object.keys(RECIPES).forEach((id) => {
+      const p = o.plans && o.plans[id], c = o.menuCfg && o.menuCfg[id];
+      ['pre', 'walk', 'stock'].forEach((f) => { s.plans[id][f] = num(p && p[f], 0, 999, s.plans[id][f], true); });
+      if (p && BATCHES.indexOf(p.batch) !== -1) s.plans[id].batch = p.batch;
+      s.menuCfg[id].sellPrice = num(c && c.sellPrice, 1, 9999, s.menuCfg[id].sellPrice);
+      s.menuCfg[id].deliveryPrice = num(c && c.deliveryPrice, 1, 9999, s.menuCfg[id].deliveryPrice);
+      s.menuCfg[id].trimLossPct = num(c && c.trimLossPct, 0, 60, s.menuCfg[id].trimLossPct);
+    });
+    s.gpPct = num(o.gpPct, 0, 40, s.gpPct);
+    s.targetMarginPct = num(o.targetMarginPct, 10, 80, s.targetMarginPct);
+    if (['A', 'B', 'C'].indexOf(o.scenario) !== -1) s.scenario = o.scenario;
+    s.wasteQty = num(o.wasteQty, 0, 999, s.wasteQty, true);
+    s.chat.progress = num(o.chat && o.chat.progress, 0, 1, s.chat.progress);
+    return s;
+  }
+
+  /* ---------- ช่องกรอกตัวเลขแบบมีปุ่ม +/- ---------- */
+  const fields = [];
+  function makeStepper(o) {
+    const fmt = (v) => (o.dec != null ? Number(v).toFixed(o.dec) : String(v));
+    const input = el('input', { id: o.id, type: 'number', inputmode: o.int ? 'numeric' : 'decimal', step: 'any', autocomplete: 'off' });
+    if (o.min != null) input.min = o.min;
+    if (o.max != null) input.max = o.max;
+    const msg = el('p', { class: 'field-msg', id: 'msg-' + o.id, role: 'status' });
+    input.setAttribute('aria-describedby', msg.id);
+    const mk = (name, label) => el('button', { type: 'button', 'aria-label': label }, icon(name));
+    const dec = mk('minus', 'ลด' + o.label), inc = mk('plus', 'เพิ่ม' + o.label);
+    const root = el('div', { class: 'stepper-wrap' }, el('div', { class: 'stepper' }, dec, input, inc), msg);
+    const opts = () => ({ min: o.min, max: o.max, int: o.int, fallback: o.get() });
+
+    input.addEventListener('input', () => {
+      const r = Core.sanitize(input.value, opts());
+      if (!r.ok) { input.setAttribute('aria-invalid', 'true'); msg.textContent = r.msg; return; }
+      input.removeAttribute('aria-invalid');
+      msg.textContent = r.msg || '';
+      if (r.value !== o.get()) update(() => o.set(r.value));
+    });
+    input.addEventListener('change', () => {
+      input.removeAttribute('aria-invalid');
+      input.value = fmt(o.get());
+    });
+    function nudge(dir) {
+      const cur = o.get();
+      const r = Core.sanitize(round2(cur + dir * o.step), opts());
+      msg.textContent = r.msg || '';
+      input.removeAttribute('aria-invalid');
+      if (r.value !== cur) update(() => o.set(r.value));
+      input.value = fmt(o.get());
+    }
+    dec.addEventListener('click', () => nudge(-1));
+    inc.addEventListener('click', () => nudge(1));
+    fields.push({ o: o, input: input, fmt: fmt });
+    return root;
+  }
+  function plainField(o) { // ช่องตัวเลขธรรมดา (ตั้งค่าเพิ่มเติม)
+    const input = el('input', { id: o.id, type: 'number', class: 'plain', inputmode: 'decimal', step: 'any', autocomplete: 'off' });
+    if (o.min != null) input.min = o.min;
+    if (o.max != null) input.max = o.max;
+    const msg = el('p', { class: 'field-msg', id: 'msg-' + o.id, role: 'status' });
+    input.setAttribute('aria-describedby', msg.id);
+    input.addEventListener('input', () => {
+      const r = Core.sanitize(input.value, { min: o.min, max: o.max, int: o.int, fallback: o.get() });
+      if (!r.ok) { input.setAttribute('aria-invalid', 'true'); msg.textContent = r.msg; return; }
+      input.removeAttribute('aria-invalid');
+      msg.textContent = r.msg || '';
+      if (r.value !== o.get()) update(() => o.set(r.value));
+    });
+    input.addEventListener('change', () => { input.removeAttribute('aria-invalid'); input.value = String(o.get()); });
+    fields.push({ o: o, input: input, fmt: (v) => String(v) });
+    return el('div', { class: 'field' }, el('label', { for: o.id, text: o.label }), o.help ? el('p', { class: 'help', text: o.help }) : null, input, msg);
+  }
+  function syncFields() {
+    fields.forEach((f) => {
+      f.input.disabled = !!(f.o.disabled && f.o.disabled());
+      if (document.activeElement !== f.input) f.input.value = f.fmt(f.o.get());
+    });
+  }
+
+  /* ---------- สร้าง UI ขั้นที่ 1 ---------- */
+  const priceUI = {};
+  function buildStep1() {
+    const body = $('priceBody');
+    ING.forEach((g) => {
+      const stepper = makeStepper({
+        id: 'in-' + g.id, label: 'ราคา' + g.name, min: g.min, max: g.max, step: g.step, dec: g.dec,
+        get: () => state.prices[g.id], set: (v) => { state.prices[g.id] = v; }
+      });
+      const rg = el('input', { type: 'range', id: 'rg-' + g.id, min: g.min, max: g.max, step: g.step, 'aria-label': 'เลื่อนปรับราคา' + g.name });
+      rg.addEventListener('input', () => update(() => { state.prices[g.id] = Number(rg.value); }));
+      const chg = el('output', { id: 'chg-' + g.id, class: 'chg', 'aria-live': 'polite' });
+      const ref = el('td', { class: 'num', 'data-label': 'อ้างอิง' });
+      const last = el('td', { class: 'num', 'data-label': 'ครั้งก่อน' });
+      body.appendChild(el('tr', null,
+        el('th', { scope: 'row' }, el('label', { for: 'in-' + g.id }, g.name, ' (' + g.unit + ')'), el('span', { class: 'note-line', text: g.note })),
+        ref, last,
+        el('td', { 'data-label': 'ราคาวันนี้' }, stepper, rg),
+        el('td', { 'data-label': 'เทียบอ้างอิง' }, chg)));
+      priceUI[g.id] = { rg: rg, chg: chg, ref: ref, last: last };
+    });
+    $('btnResetPrices').addEventListener('click', () => update(() => { Object.assign(state.prices, BENCHMARK); }));
+    document.querySelectorAll('[data-pp]').forEach((b) => b.addEventListener('click', () => {
+      const p = PRICE_PRESETS[b.getAttribute('data-pp')];
+      update(() => { Object.assign(state.prices, p); });
+    }));
+  }
+  function renderStep1() {
+    ING.forEach((g) => {
+      const u = priceUI[g.id], v = state.prices[g.id], d = derived.priceDelta[g.id];
+      u.rg.value = v;
+      u.ref.textContent = BENCHMARK[g.id].toFixed(g.dec);
+      u.last.textContent = lastKnown[g.id].toFixed(g.dec);
+      u.chg.replaceChildren();
+      const rounded = Math.round(d.pct);
+      if (Math.abs(d.pct) < 0.5) {
+        u.chg.className = 'chg'; u.chg.append(icon('equal'), 'เท่าอ้างอิง');
+      } else if (d.pct > 0) {
+        u.chg.className = 'chg up'; u.chg.append(icon('up'), 'แพงขึ้น ' + rounded + '% (+' + d.abs.toFixed(g.dec) + ' ฿)');
+      } else {
+        u.chg.className = 'chg down'; u.chg.append(icon('down'), 'ถูกลง ' + Math.abs(rounded) + '% (' + d.abs.toFixed(g.dec) + ' ฿)');
+      }
+    });
+    document.querySelectorAll('[data-pp]').forEach((b) => {
+      const p = PRICE_PRESETS[b.getAttribute('data-pp')];
+      b.setAttribute('aria-pressed', String(ING.every((g) => Math.abs(state.prices[g.id] - p[g.id]) < 1e-9)));
+    });
+  }
+
+  /* ---------- สร้าง UI ขั้นที่ 2 ---------- */
+  function buildStep2() {
+    const sel = $('menuSelect');
+    Object.keys(RECIPES).forEach((id) => sel.appendChild(el('option', { value: id, text: RECIPES[id].name })));
+    sel.addEventListener('change', () => update(() => { state.menuId = sel.value; }));
+
+    const pf = $('planFields');
+    [['pre', 'ออเดอร์ที่จองไว้แล้ว', 'ลูกค้าจ่ายแล้วหรือจองแล้ว'],
+     ['walk', 'คาดว่าลูกค้าหน้าร้านซื้อ', 'เดาจากวันแบบเดียวกันที่ผ่านมา'],
+     ['stock', 'ของเหลือจากเมื่อวานที่ยังขายได้', 'ที่ยังไม่ถูกกันไว้ให้ออเดอร์']].forEach((f) => {
+      pf.appendChild(el('div', { class: 'field' },
+        el('label', { for: 'in-' + f[0], text: f[1] }), el('p', { class: 'help', text: f[2] }),
+        makeStepper({ id: 'in-' + f[0], label: f[1], min: 0, max: 999, step: 1, int: true, get: () => plan()[f[0]], set: (v) => { plan()[f[0]] = v; } })));
+    });
+
+    document.querySelectorAll('[data-dp]').forEach((b) => b.addEventListener('click', () => {
+      const p = DAY_PRESETS[b.getAttribute('data-dp')];
+      update(() => { Object.assign(plan(), p); });
+    }));
+    document.querySelectorAll('input[name="batch"]').forEach((r) => r.addEventListener('change', () => {
+      if (r.checked) update(() => { plan().batch = Number(r.value); });
+    }));
+
+    const adv = $('advFields');
+    adv.appendChild(plainField({ id: 'in-sell', label: 'ราคาขายหน้าร้าน (บาท)', min: 1, max: 9999, get: () => state.menuCfg[state.menuId].sellPrice, set: (v) => { state.menuCfg[state.menuId].sellPrice = v; } }));
+    adv.appendChild(plainField({ id: 'in-deliv', label: 'ราคาบนแอปเดลิเวอรี่ (บาท)', min: 1, max: 9999, get: () => state.menuCfg[state.menuId].deliveryPrice, set: (v) => { state.menuCfg[state.menuId].deliveryPrice = v; } }));
+    adv.appendChild(plainField({ id: 'in-gp', label: 'ค่าหักแพลตฟอร์ม GP (%)', min: 0, max: 40, get: () => state.gpPct, set: (v) => { state.gpPct = v; } }));
+    adv.appendChild(plainField({ id: 'in-target', label: 'กำไรขั้นต่ำที่ต้องการ (%)', min: 10, max: 80, get: () => state.targetMarginPct, set: (v) => { state.targetMarginPct = v; } }));
+    adv.appendChild(plainField({
+      id: 'in-trim', label: 'ของเสียจากการหั่น/ตัดแต่ง (%)', min: 0, max: 60,
+      get: () => state.menuCfg[state.menuId].trimLossPct, set: (v) => { state.menuCfg[state.menuId].trimLossPct = v; },
+      disabled: () => !RECIPES[state.menuId].lines.some((l) => l.trim)
+    }));
+  }
+  function renderStep2() {
+    $('menuSelect').value = state.menuId;
+    document.querySelectorAll('input[name="batch"]').forEach((r) => { r.checked = Number(r.value) === plan().batch; });
+    document.querySelectorAll('[data-dp]').forEach((b) => {
+      const p = DAY_PRESETS[b.getAttribute('data-dp')], cur = plan();
+      b.setAttribute('aria-pressed', String(cur.pre === p.pre && cur.walk === p.walk && cur.stock === p.stock));
+    });
+    $('trimNote').textContent = RECIPES[state.menuId].lines.some((l) => l.trim) ? '' : 'เมนูนี้ไม่มีของเสียจากการหั่น จึงไม่ต้องตั้งค่าช่องสุดท้าย';
+    $('thDeliv').textContent = 'กำไรเดลิเวอรี่ (หัก GP ' + state.gpPct + '%)';
+  }
+
+  /* ---------- ขั้นที่ 3 ---------- */
+  const cmp = { cells: {}, picks: {}, ths: {} };
+  const CMP_ROWS = [
+    ['prod', 'ผลิต'], ['cost', 'ต้นทุนผลิต'], ['sold', 'คาดว่าขายได้'], ['profit', 'กำไรที่คาด'],
+    ['risk', 'เงินจมถ้าขายไม่หมด'], ['lost', 'ขายไม่ทัน'], ['be', 'ต้องขายให้ได้ถึงจะคุ้มทุน']
+  ];
+  function buildStep3() {
+    const head = $('cmpHead'), body = $('cmpBody');
+    const tr = el('tr', null, el('th', { scope: 'col' }, el('span', { class: 'sr-only', text: 'รายการ' })));
+    ['A', 'B', 'C'].forEach((k) => {
+      const pick = el('button', { type: 'button', class: 'btn btn-ghost pick', 'aria-pressed': 'false' });
+      pick.addEventListener('click', () => update(() => { state.scenario = k; }));
+      const th = el('th', { scope: 'col' }, 'แผน ' + k + ' ' + Core.SCENARIOS[k].label, el('span', { class: 'tag', id: 'tag-' + k }), pick);
+      tr.appendChild(th);
+      cmp.picks[k] = pick; cmp.ths[k] = th;
+    });
+    head.appendChild(tr);
+    CMP_ROWS.forEach((r) => {
+      const row = el('tr', null, el('th', { scope: 'row', text: r[1] }));
+      cmp.cells[r[0]] = {};
+      ['A', 'B', 'C'].forEach((k) => { const td = el('td', { class: 'num' }); cmp.cells[r[0]][k] = td; row.appendChild(td); });
+      body.appendChild(row);
+    });
+    const mb = $('marginBody');
+    Object.keys(RECIPES).forEach((id) => {
+      const tds = {};
+      const row = el('tr', null,
+        el('th', { scope: 'row', text: RECIPES[id].short }),
+        (tds.cost = el('td', { class: 'r num', 'data-label': 'ต้นทุน/จาน' })),
+        (tds.store = el('td', { class: 'r num', 'data-label': 'กำไรหน้าร้าน' })),
+        (tds.deliv = el('td', { class: 'r num', 'data-label': 'กำไรเดลิเวอรี่' })),
+        (tds.st = el('td', { 'data-label': 'สถานะ' })));
+      mb.appendChild(row);
+      marginRows[id] = { row: row, tds: tds };
+    });
+
+    $('wasteField').appendChild(el('label', { for: 'in-waste', text: 'ของเหลือตอนปิดรอบ (ชิ้น)' }));
+    $('wasteField').appendChild(makeStepper({ id: 'in-waste', label: 'ของเหลือตอนปิดรอบ', min: 0, max: 999, step: 1, int: true, get: () => state.wasteQty, set: (v) => { state.wasteQty = v; } }));
+    $('btnLogWaste').addEventListener('click', logWaste);
+  }
+  const marginRows = {};
+
+  function statusEl(status, text) {
+    const name = status === 'low' ? 'warn' : (status === 'watch' ? 'eye' : 'check');
+    return el('span', { class: 'st ' + status }, icon(name), text);
+  }
+  const unitWord = () => recipe().unitWord;
+
+  function renderStep3() {
+    const m = derived.active, ch = m.chosen, p = plan(), r = recipe(), tgt = state.targetMarginPct;
+    const unit = r.unitWord, tray = r.trayWord;
+
+    // 1) คำตอบหลัก
+    const headline = ch.P > 0 ? 'ผลิต ' + ch.P + ' ' + unit + ' = ' + ch.batches + ' ' + tray : 'วันนี้ไม่ต้องทำเพิ่ม';
+    const hl = $('headlineAnswer');
+    if (hl.textContent !== headline) {
+      hl.textContent = headline;
+      hl.classList.remove('flash'); void hl.offsetWidth; hl.classList.add('flash');
+    }
+    $('railHeadline').textContent = headline;
+    $('ticketPlan').textContent = 'แผน ' + ch.key + ' (' + Core.SCENARIOS[ch.key].label + ')';
+    $('ticketMenu').textContent = r.short;
+    const calc = 'จอง ' + p.pre + ' + หน้าร้านที่ตั้งเป้า ' + ch.targetWalk + ' − ของเหลือ ' + p.stock + ' = ' + ch.need;
+    $('headlineSub').textContent = 'แผน ' + ch.key + ' (' + Core.SCENARIOS[ch.key].label + '): ' + calc +
+      (ch.P > 0 ? ' → ปัดขึ้นเป็น ' + ch.batches + ' ' + tray : ' → ของที่มีอยู่พอแล้ว');
+
+    // 2) แถบเตือนกำไร
+    const b = $('marginBanner'), mg = m.margins;
+    b.replaceChildren();
+    if (m.status === 'low') {
+      b.className = 'banner low';
+      const tip = 'ลองขึ้นราคาเป็น ' + Math.ceil(m.unit / (1 - tgt / 100)) + ' บาท หรือลดส่วนผสมที่แพง' +
+        (m.deliveryStatus === 'low' ? ' (ผ่านเดลิเวอรี่เหลือ ' + pct1(mg.deliveryPct) + ' ด้วย)' : '');
+      b.append(icon('warn'), el('span', { text: 'ต่ำกว่าเป้า: ' + r.short + ' เหลือกำไร ' + pct1(mg.storePct) + ' ต่ำกว่าเป้า ' + tgt + '% ' + tip }));
+    } else if (m.deliveryStatus === 'low') {
+      b.className = 'banner low';
+      const dp = Math.ceil(m.unit / ((1 - tgt / 100) * (1 - state.gpPct / 100)));
+      b.append(icon('warn'), el('span', { text: 'ต่ำกว่าเป้า (เดลิเวอรี่): ' + r.short + ' หน้าร้านกำไร ' + pct1(mg.storePct) + ' แต่ผ่านเดลิเวอรี่เหลือ ' + pct1(mg.deliveryPct) + ' ต่ำกว่าเป้า ' + tgt + '% ลองดันขายหน้าร้าน หรือตั้งราคาบนแอปราว ' + dp + ' บาท' }));
+    } else if (m.status === 'watch') {
+      b.className = 'banner watch';
+      b.append(icon('eye'), el('span', { text: 'เฝ้าระวัง: ' + r.short + ' กำไร ' + pct1(mg.storePct) + ' ใกล้เป้า ' + tgt + '% แล้ว' }));
+    } else {
+      b.className = 'banner ok';
+      b.append(icon('check'), el('span', { text: 'ผ่านเป้า: ' + r.short + ' กำไร ' + pct1(mg.storePct) + ' (เป้า ' + tgt + '%)' }));
+    }
+
+    // 3) ตารางเทียบ 3 แผน
+    ['A', 'B', 'C'].forEach((k) => {
+      const s = m.scen[k], sel = state.scenario === k;
+      const prodTxt = s.P > 0 ? s.P + ' ' + unit + ' (' + s.batches + ' ' + tray + ')' : 'ไม่ต้องทำเพิ่ม';
+      setCell('prod', k, s.P > 0 ? s.P + ' ' + unit : prodTxt);
+      if (s.P > 0) cmp.cells.prod[k].appendChild(el('span', { class: 'u', text: '(' + s.batches + ' ' + tray + ')' }));
+      setCell('cost', k, baht(s.prodCost));
+      setCell('sold', k, s.sold + ' ' + unit);
+      setCell('profit', k, baht(s.profit));
+      setCell('risk', k, baht(s.atRisk), s.atRisk > 0.5 ? 'risk' : '');
+      setCell('lost', k, s.lost + ' ' + unit);
+      setCell('be', k, s.P > 0 ? s.breakEvenUnits + ' ' + unit : '-');
+      cmp.ths[k].className = sel ? 'sel' : '';
+      CMP_ROWS.forEach((row) => { cmp.cells[row[0]][k].classList.toggle('sel', sel); });
+      cmp.picks[k].setAttribute('aria-pressed', String(sel));
+      cmp.picks[k].textContent = sel ? 'แผนที่เลือก' : 'เลือกแผนนี้';
+      $('tag-' + k).textContent = k === 'B' ? 'แนะนำ' : (k === 'A' ? 'ทำน้อยสุด' : 'ทำมากสุด');
+    });
+    const notes = [];
+    if (m.scen.B.P === m.scen.A.P) notes.push('แผน B ผลิตเท่าแผน A เพราะปัดเป็น' + tray + 'แล้วเท่ากัน');
+    if (m.scen.C.P === m.scen.B.P) notes.push('แผน C ผลิตเท่าแผน B เพราะปัดเป็น' + tray + 'แล้วเท่ากัน');
+    $('cmpNote').textContent = notes.join(' · ');
+
+    // 4) ตารางกำไรต่อเมนู
+    Object.keys(RECIPES).forEach((id) => {
+      const mm = derived.menus[id], ui = marginRows[id];
+      const worst = (mm.status === 'low' || mm.deliveryStatus === 'low') ? 'low' : ((mm.status === 'watch' || mm.deliveryStatus === 'watch') ? 'watch' : 'ok');
+      ui.row.classList.toggle('is-low', worst === 'low');
+      ui.tds.cost.textContent = baht1(mm.unit);
+      ui.tds.store.textContent = pct1(mm.margins.storePct);
+      ui.tds.deliv.textContent = pct1(mm.margins.deliveryPct);
+      const where = mm.status === 'low' && mm.deliveryStatus === 'low' ? 'หน้าร้านและเดลิเวอรี่' : (mm.status === 'low' ? 'หน้าร้าน' : 'เดลิเวอรี่');
+      const label = worst === 'low' ? 'ต่ำกว่าเป้า ' + state.targetMarginPct + '% (' + where + ')' : (worst === 'watch' ? 'เฝ้าระวัง' : 'ผ่านเป้า');
+      ui.tds.st.replaceChildren(statusEl(worst, label));
+    });
+
+    renderWhy();
+    renderWaste();
+  }
+  function setCell(row, k, text, cls) {
+    const td = cmp.cells[row][k];
+    td.textContent = text;
+    td.classList.toggle('risk', cls === 'risk');
+  }
+
+  function renderWhy() {
+    const m = derived.active, ch = m.chosen, p = plan(), r = recipe(), cfg = state.menuCfg[state.menuId];
+    const box = $('whyBody');
+    const calc = ch.need > 0
+      ? '= ceil((' + p.pre + ' + ' + ch.targetWalk + ' − ' + p.stock + ') ÷ ' + p.batch + ') × ' + p.batch + ' = ceil(' + (Math.round(ch.need / p.batch * 1000) / 1000) + ') × ' + p.batch + ' = ' + Math.ceil(ch.need / p.batch) + ' × ' + p.batch + ' = ' + ch.P
+      : '= (' + p.pre + ' + ' + ch.targetWalk + ' − ' + p.stock + ') = ' + ch.need + ' ซึ่งไม่เกิน 0 จึงไม่ต้องผลิตเพิ่ม = 0';
+    const lines = [];
+    lines.push(el('li', { text: 'เป้าลูกค้าหน้าร้าน = ' + p.walk + ' × ' + ch.k + ' = ' + ch.targetWalk + ' (' + Math.round(ch.k * 100) + '% ของที่คาดไว้ ตามแผน ' + ch.key + ')' }));
+    lines.push(el('li', { text: 'ต้นทุนต่อ' + r.unitWord + ' = วัตถุดิบ ' + m.raw.toFixed(2) + ' + ค่าอื่น ๆ (เครื่องปรุง กล่อง แก๊ส ค่าแรง) ' + r.fixed.toFixed(2) + ' = ' + m.unit.toFixed(2) + ' ฿' }));
+    r.lines.filter((l) => l.trim).forEach((l) => {
+      const loss = cfg.trimLossPct;
+      lines.push(el('li', { text: ING_NAME[l.ing] + ' ' + l.qty + ' กก. ÷ (1 − ' + loss + '%) = ' + (l.qty / (1 - loss / 100)).toFixed(3) + ' กก. (เผื่อส่วนที่ตัดทิ้ง ' + loss + '%)' }));
+    });
+    lines.push(el('li', { text: 'กำไรที่คาด = ขายได้ ' + ch.sold + ' × ราคา ' + cfg.sellPrice + ' − ต้นทุนผลิต ' + nf0(ch.prodCost) + ' = ' + baht(ch.profit) }));
+    lines.push(el('li', { text: 'เงินจมถ้าขายไม่หมด = (ผลิต ' + ch.P + ' − ขายจากของใหม่ ' + ch.soldFromNew + ') × ' + m.unit.toFixed(2) + ' = ' + baht(ch.atRisk) }));
+    box.replaceChildren(
+      el('p', { text: 'สูตร (จากเอกสารออกแบบ)' }),
+      el('p', { class: 'formula', text: 'ผลิต = ปัดขึ้นเป็นรอบ( (ออเดอร์จอง + เป้าลูกค้าหน้าร้าน − ของเหลือ) ÷ ขนาดรอบ ) × ขนาดรอบ' }),
+      el('p', { text: 'ใส่ตัวเลขของพี่:' }),
+      el('p', { class: 'formula', text: calc }),
+      el('p', { text: 'สรุปสั้น ๆ: จอง ' + p.pre + ' + เผื่อหน้าร้าน ' + ch.targetWalk + ' − มีของอยู่ ' + p.stock + ' = ต้องหาเพิ่ม ' + Math.max(0, ch.need) + ' ' + r.unitWord + ' แล้วปัดขึ้นให้ครบรอบละ ' + p.batch + ' จึงได้ ' + ch.P }),
+      el('ul', null, lines));
+  }
+
+  function renderWaste() {
+    const m = derived.active, q = state.wasteQty;
+    $('wasteCost').textContent = baht1(q * m.unit);
+    const rec = $('wasteRec');
+    rec.replaceChildren();
+    if (q > 6) { rec.className = 'st low'; rec.append(icon('warn'), 'ของเหลือเยอะ รอบหน้าลดยอดลูกค้าหน้าร้านที่คาดลง 25%'); }
+    else if (q > 0) { rec.className = 'st watch'; rec.append(icon('eye'), 'มีของเหลือ รอบหน้าลองผลิตลง 1 รอบ'); }
+    else { rec.className = 'st ok'; rec.append(icon('check'), 'ไม่มีของเหลือ ผลิตพอดี'); }
+  }
+  function logWaste() {
+    const st = $('wasteStatus');
+    let log = [];
+    try { log = JSON.parse(localStorage.getItem(WASTE_LOG_KEY) || '[]'); if (!Array.isArray(log)) log = []; } catch (e) { log = []; }
+    log.push({ t: new Date().toISOString(), menu: state.menuId, qty: state.wasteQty, cost: Math.round(state.wasteQty * derived.active.unit * 10) / 10 });
+    log = log.slice(-30);
+    try {
+      localStorage.setItem(WASTE_LOG_KEY, JSON.stringify(log));
+      st.textContent = 'บันทึกแล้ว (เก็บในเครื่องนี้เท่านั้น) · สะสม ' + log.length + ' ครั้ง';
+    } catch (e) {
+      st.textContent = 'บันทึกในเครื่องนี้ไม่ได้ (เบราว์เซอร์ไม่อนุญาต) แต่ตัวเลขด้านบนยังใช้ได้ตามปกติ';
+    }
+  }
+
+  /* ---------- update / render ---------- */
+  function renderAll() {
+    renderStep1(); renderStep2(); renderStep3(); syncFields();
+    if (Chat) Chat.render();
+  }
+  function update(mut) {
+    if (mut) mut();
+    derived = Core.derive(state);
+    renderAll();
+    scheduleSave();
+    if (Chat) Chat.onStateChange();
+  }
+
+  /* ============================================================
+     สถาปัตยกรรม AWS (แผนภาพ SVG สร้างจากข้อมูลชุดเดียว)
+     ============================================================ */
+  const AWS_NODES = [
+    { id: 'user', label: 'มือถือ', icon: 'phone', short: ['พี่เล็กดูแผนผลิต', 'ลูกค้าถามในแชท'],
+      analogy: 'โทรศัพท์ของพี่เล็กและของลูกค้า', does: 'พี่เล็กเปิดดูแผนผลิตจากมือถือ ลูกค้าถามร้านผ่านแชท ไม่ต้องลงโปรแกรมอะไรเพิ่ม' },
+    { id: 'line', label: 'LINE OA / แชท', icon: 'line', dashed: true, short: ['ช่องทางที่ทุกคน', 'ใช้อยู่แล้ว', '(ต่อยอดระยะที่ 2)'],
+      analogy: 'ช่องทางที่ทุกคนใช้อยู่แล้ว', does: 'ส่งรูปใบเสร็จตลาดสด หรือให้ลูกค้าถามร้านในแชทที่คุ้นมืออยู่แล้ว ตอนนี้ในหน้านี้เป็นเดโมจำลอง' },
+    { id: 'cf', label: 'CloudFront + S3', icon: 'store', short: ['ป้ายหน้าร้าน', 'ที่เปิดได้ทุกที่'],
+      analogy: 'ป้ายหน้าร้านที่เปิดได้ทุกที่', does: 'เก็บหน้าเว็บนี้ไว้และส่งให้เปิดเร็วจากที่ไหนก็ได้ ไม่มีเครื่องเซิร์ฟเวอร์ให้ดูแล' },
+    { id: 'apigw', label: 'API Gateway', icon: 'gate', short: ['เคาน์เตอร์รับเรื่อง'],
+      analogy: 'เคาน์เตอร์รับเรื่อง', does: 'รับคำขอจากหน้าเว็บหรือแชท แล้วส่งต่อให้ถูกคนทำ' },
+    { id: 'lambda', label: 'AWS Lambda', icon: 'bolt', short: ['พนักงานที่มาทำงาน', 'เฉพาะตอนมีคนเรียก', 'คิดเงินตามงาน'],
+      analogy: 'พนักงานที่มาทำงานเฉพาะตอนมีคนเรียก คิดเงินตามงานที่ทำ', does: 'คำนวณแผนผลิตและต้นทุนทุกครั้งที่ถูกเรียก ไม่มีงานก็ไม่เสียค่าใช้จ่าย' },
+    { id: 'ddb', label: 'Amazon DynamoDB', icon: 'db', short: ['สมุดจดสูตร', 'และยอดขาย'],
+      analogy: 'สมุดจดสูตรและยอดขาย', does: 'เก็บสูตร ราคาวัตถุดิบ และบันทึกของเหลือ แยกตามร้าน' },
+    { id: 'bedrock', label: 'Amazon Bedrock', icon: 'eye', short: ['ผู้ช่วยอ่านใบเสร็จ', 'ตลาดสดจากรูปถ่าย', 'และช่วยตอบลูกค้า'],
+      analogy: 'ผู้ช่วยอ่านใบเสร็จตลาดสดจากรูปถ่าย (และช่วยเรียบเรียงคำตอบลูกค้า)', does: 'อ่านรูปใบเสร็จแล้วดึงชื่อของกับราคาออกมา ในแชทจะช่วยเรียบเรียงคำตอบให้ลูกค้า (ใช้โมเดล Claude Haiku)' }
+  ];
+  const AWS_STEPS = [
+    { text: 'พี่เล็กถ่ายรูปใบเสร็จตลาดสดแล้วส่งเข้า LINE หรือเว็บ', nodes: ['user', 'line', 'apigw'] },
+    { text: 'ระบบส่งรูปให้ผู้ช่วยอ่านใบเสร็จ (Bedrock) ดึงชื่อของและราคาออกมา', nodes: ['apigw', 'lambda', 'bedrock'] },
+    { text: 'ราคาใหม่ถูกจดลงสมุด (DynamoDB) แล้วคำนวณต้นทุนต่อจานใหม่', nodes: ['lambda', 'ddb'] },
+    { text: 'หน้าเว็บ (CloudFront + S3) แสดงแผนว่าวันนี้ควรผลิตกี่ชิ้น', nodes: ['cf', 'user', 'lambda'] },
+    { text: 'ลูกค้าถามในแชท บอทดูสต็อกและราคาจากสมุดเดียวกัน แล้วตอบ', nodes: ['line', 'apigw', 'lambda', 'ddb', 'bedrock'], chat: true }
+  ];
+  const LAYOUTS = {
+    wide: {
+      cls: 'arch-wide', vb: [960, 470], w: 176, h: 112, fs: [15, 13],
+      pos: { user: [16, 24], line: [16, 250], cf: [264, 24], apigw: [264, 250], lambda: [536, 250], ddb: [768, 150], bedrock: [768, 330] },
+      edges: [
+        { a: 'user', b: 'cf', kind: 'owner', d: 'M192 80 H262' },
+        { a: 'user', b: 'apigw', kind: 'owner', d: 'M104 136 V193 H336 V248' },
+        { a: 'line', b: 'apigw', kind: 'chat', d: 'M192 306 H262' },
+        { a: 'apigw', b: 'lambda', kind: 'owner', d: 'M440 298 H534' },
+        { a: 'apigw', b: 'lambda', kind: 'chat', d: 'M440 314 H534' },
+        { a: 'lambda', b: 'ddb', kind: 'owner', d: 'M712 270 H730 V198 H766' },
+        { a: 'lambda', b: 'ddb', kind: 'chat', d: 'M712 284 H744 V214 H766' },
+        { a: 'lambda', b: 'bedrock', kind: 'chat', d: 'M712 328 H744 V378 H766' },
+        { a: 'lambda', b: 'bedrock', kind: 'owner', d: 'M712 342 H730 V394 H766' }
+      ],
+      legend: [16, 410]
+    },
+    tall: {
+      cls: 'arch-tall', vb: [360, 590], w: 152, h: 112, fs: [14, 12],
+      pos: { user: [8, 10], line: [200, 10], cf: [8, 160], apigw: [200, 160], ddb: [8, 310], lambda: [200, 310], bedrock: [200, 460] },
+      edges: [
+        { a: 'user', b: 'cf', kind: 'owner', d: 'M72 122 V158' },
+        { a: 'user', b: 'apigw', kind: 'owner', d: 'M130 122 V141 H236 V158' },
+        { a: 'line', b: 'apigw', kind: 'chat', d: 'M284 122 V158' },
+        { a: 'apigw', b: 'lambda', kind: 'owner', d: 'M232 272 V308' },
+        { a: 'apigw', b: 'lambda', kind: 'chat', d: 'M268 272 V308' },
+        { a: 'lambda', b: 'ddb', kind: 'owner', d: 'M200 350 H162' },
+        { a: 'lambda', b: 'ddb', kind: 'chat', d: 'M200 374 H162' },
+        { a: 'lambda', b: 'bedrock', kind: 'owner', d: 'M232 422 V458' },
+        { a: 'lambda', b: 'bedrock', kind: 'chat', d: 'M268 422 V458' }
+      ],
+      legend: [8, 480]
+    }
+  };
+  const arch = { step: null, node: null };
+
+  function svgEl(tag, attrs, text) {
+    const e = document.createElementNS(SVGNS, tag);
+    if (attrs) Object.keys(attrs).forEach((k) => e.setAttribute(k, attrs[k]));
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function buildArchSvg(key) {
+    const L = LAYOUTS[key];
+    const svg = svgEl('svg', { class: 'arch-svg ' + L.cls, viewBox: '0 0 ' + L.vb[0] + ' ' + L.vb[1], role: 'group', 'aria-label': 'แผนภาพการทำงานของระบบบน AWS' });
+    svg.appendChild(svgEl('title', null, 'แผนภาพการทำงานของระบบบน AWS'));
+    svg.appendChild(svgEl('desc', null, 'เจ้าของร้านเปิดหน้าเว็บจาก CloudFront และ S3 แล้วส่งคำขอผ่าน API Gateway ไปที่ Lambda ซึ่งอ่านเขียนข้อมูลใน DynamoDB และเรียก Bedrock อ่านใบเสร็จ ส่วนลูกค้าถามผ่าน LINE OA หรือเว็บแชท เข้าเส้นทางเดียวกันถึง Lambda'));
+    L.edges.forEach((e) => {
+      svg.appendChild(svgEl('path', {
+        class: 'edge ' + e.kind, d: e.d, 'data-a': e.a, 'data-b': e.b,
+        'marker-end': e.kind === 'chat' ? 'url(#arrow-acc)' : 'url(#arrow-ink)'
+      }));
+    });
+    AWS_NODES.forEach((n) => {
+      const pos = L.pos[n.id];
+      const g = svgEl('g', {
+        class: 'node' + (n.dashed ? ' dashed' : ''), role: 'button', tabindex: '0', 'aria-pressed': 'false',
+        'aria-label': n.label + ': ' + n.analogy, 'data-node': n.id, transform: 'translate(' + pos[0] + ' ' + pos[1] + ')'
+      });
+      g.appendChild(svgEl('rect', { class: 'node-box', x: 0, y: 0, width: L.w, height: L.h, rx: 2 }));
+      const ic = svgEl('svg', { class: 'ic', x: 12, y: 10, width: 24, height: 24, viewBox: '0 0 24 24' });
+      ic.appendChild(svgEl('use', { href: '#i-' + n.icon }));
+      g.appendChild(ic);
+      g.appendChild(svgEl('text', { class: 'nl', x: 12, y: 50, 'font-size': L.fs[0] }, n.label));
+      const t = svgEl('text', { class: 'na', x: 12, y: 68, 'font-size': L.fs[1] });
+      n.short.forEach((line, i) => t.appendChild(svgEl('tspan', { x: 12, dy: i === 0 ? 0 : L.fs[1] + 4 }, line)));
+      g.appendChild(t);
+      g.addEventListener('click', () => selectNode(n.id));
+      g.addEventListener('focus', () => selectNode(n.id));
+      g.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); selectNode(n.id); } });
+      svg.appendChild(g);
+    });
+    const lg = L.legend;
+    svg.appendChild(svgEl('path', { class: 'edge owner', d: 'M' + lg[0] + ' ' + lg[1] + ' h32' }));
+    svg.appendChild(svgEl('text', { class: 'legend-t', x: lg[0] + 42, y: lg[1] + 5 }, 'เส้นทางเจ้าของร้าน'));
+    svg.appendChild(svgEl('path', { class: 'edge chat', d: 'M' + lg[0] + ' ' + (lg[1] + 28) + ' h32' }));
+    svg.appendChild(svgEl('text', { class: 'legend-t chat', x: lg[0] + 42, y: lg[1] + 33 }, 'เส้นทางแชทลูกค้า'));
+    return svg;
+  }
+  function buildAws() {
+    const wrap = $('archWrap');
+    wrap.append(buildArchSvg('wide'), buildArchSvg('tall'));
+    const ol = $('flowSteps');
+    AWS_STEPS.forEach((s, i) => {
+      const b = el('button', { type: 'button', 'aria-pressed': 'false' }, el('span', { text: s.text }));
+      b.addEventListener('click', () => selectStep(i));
+      ol.appendChild(el('li', null, b));
+    });
+    renderArch();
+  }
+  function selectNode(id) {
+    if (arch.node === id) return;
+    arch.node = id;
+    const i = AWS_STEPS.findIndex((s) => s.nodes.indexOf(id) !== -1);
+    arch.step = i === -1 ? null : i;
+    renderArch();
+  }
+  function selectStep(i) { arch.step = arch.step === i && arch.node === null ? null : i; arch.node = null; renderArch(); }
+  function renderArch() {
+    const stepNodes = arch.step !== null ? AWS_STEPS[arch.step].nodes : null;
+    document.querySelectorAll('.arch-svg .node').forEach((g) => {
+      const id = g.getAttribute('data-node');
+      const on = arch.node === id;
+      g.setAttribute('aria-pressed', String(on));
+      g.classList.toggle('sel', on);
+      g.classList.toggle('dim', !!stepNodes && stepNodes.indexOf(id) === -1);
+    });
+    document.querySelectorAll('.arch-svg .edge[data-a]').forEach((p) => {
+      const on = !stepNodes || (stepNodes.indexOf(p.getAttribute('data-a')) !== -1 && stepNodes.indexOf(p.getAttribute('data-b')) !== -1);
+      p.classList.toggle('dim', !on);
+    });
+    document.querySelectorAll('#flowSteps button').forEach((b, i) => b.setAttribute('aria-pressed', String(arch.step === i && arch.node === null)));
+    const d = $('archDetail');
+    d.replaceChildren();
+    if (arch.node) {
+      const n = AWS_NODES.find((x) => x.id === arch.node);
+      const used = AWS_STEPS.map((s, i) => (s.nodes.indexOf(n.id) !== -1 ? i + 1 : 0)).filter(Boolean);
+      d.append(el('p', { class: 'k', text: n.label }), el('p', { class: 'big-a', text: n.analogy }), el('p', { text: n.does }),
+        el('p', { class: 'help', text: used.length ? 'ใช้ในขั้นตอนที่ ' + used.join(', ') : '' }));
+    } else if (arch.step !== null) {
+      const s = AWS_STEPS[arch.step];
+      d.append(el('p', { class: 'k', text: 'ขั้นที่ ' + (arch.step + 1) + ' จาก ' + AWS_STEPS.length }), el('p', { class: 'big-a', text: s.text }));
+      if (s.chat) {
+        const open = el('button', { type: 'button', class: 'btn btn-sm' }, icon('chat'), 'ลองคุยกับบอท');
+        open.addEventListener('click', () => Chat.open(open));
+        d.append(el('span', { class: 'tagline', text: 'แชทลูกค้าอยู่ตรงนี้ และเดโมในหน้านี้จำลองขั้นตอนนี้' }), el('br'), open);
+      }
+    } else {
+      d.append(el('p', { class: 'k', text: 'แตะเพื่อดูรายละเอียด' }), el('p', { class: 'big-a', text: 'เลือกกล่องในแผนภาพ หรือเลือกขั้นตอนด้านล่าง' }),
+        el('p', { text: 'ทุกกล่องมีคำเปรียบเทียบสั้น ๆ ว่าทำหน้าที่เหมือนอะไรในร้านของพี่' }));
+    }
+  }
+
+  /* ============================================================
+     แชทบอทลูกค้า (เดโมจำลอง ไม่มีเซิร์ฟเวอร์)
+     ข้อความทุกบรรทัดใส่ผ่าน textContent เท่านั้น (ไม่แปลงข้อความผู้ใช้เป็น HTML)
+     ============================================================ */
+  const chatRuntime = { orders: { pork_rice: 0, croissant: 0, tomyum: 0 } };
+  const Chat = (() => {
+    const fab = $('chatFab'), panel = $('chatPanel'), log = $('chatLog'), typing = $('chatTyping'), chipsBox = $('chatChips');
+    const form = $('chatForm'), input = $('chatInput'), prog = $('chatProgress'), progOut = $('chatProgressVal');
+    let lastFocus = null, greeted = false, flow = null, busy = false, lastSig = '', syncTimer = null, refocus = false;
+    const pending = [];
+    const reduce = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isOpen = () => !panel.hidden;
+    const ids = Object.keys(RECIPES);
+
+    function snapshot(id) {
+      const m = derived.menus[id], r = RECIPES[id], c = state.menuCfg[id];
+      const remaining = Math.max(0, m.remaining - chatRuntime.orders[id]);
+      const status = remaining <= 0 ? 'out' : (remaining <= Math.max(5, Math.ceil(m.available * 0.2)) ? 'low' : 'ok');
+      return { id: id, name: r.name, short: r.short, unit: r.unitWord, sellPrice: c.sellPrice, deliveryPrice: c.deliveryPrice,
+               available: m.available, soldSim: m.soldSim, remaining: remaining, status: status };
+    }
+    const sig = () => ids.map((id) => snapshot(id).remaining).join(',');
+
+    function addMsg(role, lines, muted) {
+      const d = el('div', { class: 'msg msg-' + role + (muted ? ' msg-muted' : '') });
+      d.appendChild(el('span', { class: 'sr-only', text: role === 'user' ? 'คุณ: ' : 'ร้าน: ' }));
+      lines.forEach((l) => d.appendChild(el('p', { text: l })));
+      const now = new Date();
+      const hhmm = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+      d.appendChild(el('time', { datetime: now.toISOString(), text: hhmm }));
+      log.appendChild(d);
+      while (log.children.length > 60) log.removeChild(log.firstChild);
+      log.scrollTop = log.scrollHeight;
+      if (role === 'bot') lastSig = sig();
+    }
+    function renderChips(list) {
+      chipsBox.replaceChildren();
+      (list || []).forEach((c) => {
+        const b = el('button', { type: 'button', class: 'chip', text: c.label });
+        if (c.disabled) b.disabled = true;
+        else b.addEventListener('click', () => { if (!busy) { refocus = true; send(c.text || c.label); } });
+        chipsBox.appendChild(b);
+      });
+    }
+    const defaultChips = () => [{ label: 'เมนูวันนี้' }, { label: 'ราคา' }, { label: 'ของเหลือไหม' }, { label: 'สั่งล่วงหน้า' }, { label: 'เวลาเปิด-ปิด' }, { label: 'คุยกับเจ้าของร้าน' }];
+
+    /* ----- คำตอบ ----- */
+    const items = (c) => (c.itemId ? [c.itemId] : ids);
+    function stockLine(s) {
+      if (s.status === 'out') return s.short + ' หมดแล้วค่ะ ขออภัย ลองสั่งล่วงหน้าสำหรับพรุ่งนี้ได้นะคะ';
+      if (s.status === 'low') return s.short + ' ใกล้หมดแล้ว เหลือ ' + s.remaining + ' ' + s.unit;
+      return s.short + ' เหลือ ' + s.remaining + ' ' + s.unit + ' (อัปเดตจากแผนวันนี้)';
+    }
+    const hhmmToMin = (s) => { const p = String(s).split(':'); return parseInt(p[0], 10) * 60 + parseInt(p[1] || '0', 10); };
+    // คำว่า "ยืนยัน" ที่รับได้ (เทียบทั้งข้อความหลัง normalize ไม่ใช้ substring)
+    const CONFIRM_WORDS = ['ยืนยัน', 'ตกลง', 'โอเค', 'ok', 'okay', 'ใช่', 'yes', 'y', 'ได้', 'เอา'].map(BotNLU.normalize);
+    function timeChips() {
+      const open = parseInt(SHOP.open, 10), close = parseInt(SHOP.close, 10);
+      const now = new Date();
+      const first = Math.max(open + 1, now.getHours() + 1);
+      const chips = [];
+      for (let h = first; h < close && chips.length < 3; h++) chips.push({ label: String(h).padStart(2, '0') + ':00' });
+      // หลังร้านปิดหรือช่วงสายเกินไป: เสนอเวลาของพรุ่งนี้แทน
+      for (let h = open + 1; chips.length < 3; h++) chips.push({ label: 'พรุ่งนี้ ' + String(h).padStart(2, '0') + ':00' });
+      return chips;
+    }
+    function itemChips() {
+      return ids.map((id) => {
+        const s = snapshot(id);
+        return s.remaining > 0 ? { label: s.short + ' (เหลือ ' + s.remaining + ')', text: s.short } : { label: s.short + ' (หมด)', disabled: true };
+      });
+    }
+    function flowPrompt() {
+      if (!flow.itemId) return { lines: ['จะสั่งเมนูไหนคะ'], chips: itemChips() };
+      const s = snapshot(flow.itemId);
+      if (!flow.qty) {
+        const q = [1, 2, 3, 5].filter((n) => n <= s.remaining).map((n) => ({ label: String(n) }));
+        return { lines: [s.short + ' กี่' + s.unit + 'คะ (ตอนนี้เหลือ ' + s.remaining + ')'], chips: q };
+      }
+      if (!flow.time) return { lines: ['รับกี่โมงคะ (ร้านเปิด ' + SHOP.open + '-' + SHOP.close + ' น.)'], chips: timeChips() };
+      return {
+        lines: ['สรุปออเดอร์: ' + s.name + ' × ' + flow.qty + ' ' + s.unit + ' = ' + (flow.qty * s.sellPrice) + ' บาท · รับเวลา ' + flow.time + ' · ชำระที่ร้าน'],
+        chips: [{ label: 'ยืนยัน' }, { label: 'แก้ไข' }, { label: 'ยกเลิก' }]
+      };
+    }
+    function applyQty(n) { // คืนข้อความผิดพลาด หรือ null ถ้าตั้งค่าได้
+      const s = snapshot(flow.itemId);
+      if (n < 1) return 'ใส่ตั้งแต่ 1 ขึ้นไปนะคะ';
+      if (n > s.remaining) return 'ตอนนี้เหลือ ' + s.remaining + ' ' + s.unit + ' ลดจำนวนหน่อยนะคะ';
+      flow.qty = n; return null;
+    }
+    function flowStep(text, norm, c) {
+      if (!flow.itemId) {
+        const id = BotNLU.detectItem(norm);
+        if (!id) return { lines: ['ยังไม่เจอเมนูนั้นค่ะ เลือกจากปุ่มด้านล่างได้เลย'], chips: itemChips() };
+        const s = snapshot(id);
+        if (s.remaining <= 0) return { lines: [s.short + ' หมดแล้วค่ะ เลือกเมนูอื่นนะคะ'], chips: itemChips() };
+        flow.itemId = id;
+        const q = BotNLU.parseQty(text, false);
+        if (q !== null && /ชิน|จาน|ถุง|ถาด/.test(norm)) { const err = applyQty(q); if (err) return { lines: [err], chips: flowPrompt().chips }; }
+        return flowPrompt();
+      }
+      if (!flow.qty) {
+        const q = BotNLU.parseQty(text, true);
+        if (q === null) return { lines: ['ใส่เป็นตัวเลขนะคะ เช่น 2'], chips: flowPrompt().chips };
+        const err = applyQty(q);
+        return err ? { lines: [err], chips: flowPrompt().chips } : flowPrompt();
+      }
+      if (!flow.time) {
+        const m = text.match(/^\D*(\d{1,2})\s*[:.]?\s*(\d{2})?\D*$/);
+        if (m) {
+          const mins = parseInt(m[1], 10) * 60 + (m[2] ? parseInt(m[2], 10) : 0);
+          const inHours = (!m[2] || parseInt(m[2], 10) < 60) && mins >= hhmmToMin(SHOP.open) && mins <= hhmmToMin(SHOP.close);
+          if (inHours) { flow.time = text.trim().slice(0, 20); return flowPrompt(); }
+          return { lines: ['ร้านเปิด ' + SHOP.open + '-' + SHOP.close + ' น. เลือกเวลาในช่วงนี้นะคะ'], chips: timeChips() };
+        }
+        if (/พรุ่งนี้|เช้า/.test(text)) { flow.time = text.trim().slice(0, 20); return flowPrompt(); }
+        return { lines: ['ขอเวลาเป็นตัวเลขนะคะ เช่น 10:30 หรือเลือกจากปุ่ม'], chips: timeChips() };
+      }
+      // ปฏิเสธ ("ไม่ใช่", "ไม่ยืนยัน") ต้องเช็กก่อน แล้วค่อยรับเฉพาะคำตอบที่เป็น "ใช่" ทั้งข้อความ
+      const negated = /ไม|^no(pe)?$/.test(norm);
+      const answerCore = norm.replace(/(คะ|ครับ|คับ|คา|นะ|เลย)+$/, '');
+      if (!negated && CONFIRM_WORDS.indexOf(answerCore) !== -1) {
+        const s = snapshot(flow.itemId);
+        chatRuntime.orders[flow.itemId] += flow.qty;
+        const done = s.short + ' × ' + flow.qty + ' ' + s.unit + ' รับเวลา ' + flow.time;
+        flow = null;
+        return { lines: ['รับออเดอร์เรียบร้อยค่ะ ' + done, '(เดโม: ยังไม่ได้ส่งออเดอร์จริง)'], chips: defaultChips() };
+      }
+      if (!negated && /แกไข|แก/.test(norm)) { flow = { itemId: null, qty: null, time: null }; return flowPrompt(); }
+      return { lines: ['กด ยืนยัน แก้ไข หรือยกเลิก ได้เลยค่ะ'], chips: flowPrompt().chips };
+    }
+    function respond(text) {
+      const norm = BotNLU.normalize(text);
+      const c = BotNLU.classify(text);
+      if (flow) {
+        if (c.intent === 'human') { flow = null; return answer(c); }
+        if (/ยกเลิก|cancel/.test(norm)) { flow = null; return { lines: ['ยกเลิกออเดอร์แล้วค่ะ'], chips: defaultChips() }; }
+        return flowStep(text, norm, c);
+      }
+      return answer(c);
+    }
+    function answer(c) {
+      switch (c.intent) {
+        case 'human':
+          return { lines: ['ได้เลยค่ะ เดี๋ยวให้เจ้าของร้านตอบทาง LINE ร้านนะคะ', '(เดโม: ยังไม่ได้ส่งข้อความจริง)'], chips: [{ label: 'เมนูวันนี้' }, { label: 'สั่งล่วงหน้า' }] };
+        case 'allergen':
+          return { lines: items(c).map((id) => RECIPES[id].short + ': ' + RECIPES[id].allergens).concat(['ถ้าแพ้รุนแรง กรุณายืนยันกับร้านก่อนสั่ง (ข้อมูลเดโม)']), chips: [{ label: 'ราคา' }, { label: 'เก็บได้กี่วัน' }] };
+        case 'shelf':
+          return { lines: items(c).map((id) => RECIPES[id].short + ': ' + RECIPES[id].shelf), chips: [{ label: 'ส่วนผสม' }, { label: 'สั่งล่วงหน้า' }] };
+        case 'stock':
+          return { lines: items(c).map((id) => stockLine(snapshot(id))), chips: [{ label: 'สั่งล่วงหน้า' }, { label: 'ราคา' }] };
+        case 'price':
+          return { lines: items(c).map((id) => { const s = snapshot(id); return s.name + ' ' + s.sellPrice + ' บาท (หน้าร้าน) · ' + s.deliveryPrice + ' บาทบนแอปเดลิเวอรี่'; }), chips: [{ label: 'เหลือไหม' }, { label: 'สั่งล่วงหน้า' }] };
+        case 'hours':
+          return { lines: ['เปิด ' + SHOP.open + '-' + SHOP.close + ' น. หยุด' + SHOP.closedDay + ' (ข้อมูลเดโม)'], chips: [{ label: 'ที่ตั้ง' }, { label: 'เมนูวันนี้' }] };
+        case 'location':
+          return { lines: [SHOP.where, SHOP.pickup], chips: [{ label: 'เวลาเปิด-ปิด' }, { label: 'ราคา' }] };
+        case 'menu':
+          return { lines: ids.map((id) => { const s = snapshot(id); return s.short + ' ' + s.sellPrice + ' ฿ — ' + (s.remaining > 0 ? 'เหลือ ' + s.remaining + ' ' + s.unit : 'หมดแล้ว'); }), chips: [{ label: 'ราคา' }, { label: 'สั่งล่วงหน้า' }, { label: 'เหลือไหม' }] };
+        case 'thanks':
+          return { lines: ['ยินดีค่ะ มีอะไรถามได้อีกนะคะ'], chips: [{ label: 'เมนูวันนี้' }] };
+        case 'greet':
+          return { lines: ['สวัสดีค่ะ ยินดีต้อนรับสู่' + SHOP.name, 'นี่คือเดโมจำลองในหน้านี้ ยังไม่ได้เชื่อมระบบจริง ถามเมนู ราคา หรือสั่งล่วงหน้าได้เลยค่ะ'], chips: defaultChips() };
+        case 'preorder': {
+          flow = { itemId: null, qty: null, time: null };
+          if (c.itemId) {
+            const s = snapshot(c.itemId);
+            if (s.remaining <= 0) { flow = null; return { lines: [s.short + ' หมดแล้วค่ะ ลองเมนูอื่นนะคะ'], chips: itemChips() }; }
+            flow.itemId = c.itemId;
+            if (c.qty) { const err = applyQty(c.qty); if (err) return { lines: [err], chips: flowPrompt().chips }; }
+          }
+          const p = flowPrompt();
+          return { lines: ['ได้ค่ะ มาจองล่วงหน้ากัน'].concat(p.lines), chips: p.chips };
+        }
+        default:
+          return { lines: ['ขอโทษค่ะ ยังไม่เข้าใจ ลองเลือกหัวข้อด้านล่าง หรือพิมพ์สั้น ๆ เช่น "ราคาครัวซองต์" หรือคุยกับเจ้าของร้านได้'], chips: defaultChips() };
+      }
+    }
+
+    /* ----- ส่ง/ตอบ พร้อมจุดพิมพ์ ----- */
+    function send(raw) {
+      const text = String(raw || '').trim().slice(0, 200);
+      if (!text) return;
+      addMsg('user', [text]);
+      pending.push(text);
+      if (!busy) next();
+    }
+    function next() {
+      if (!pending.length) { busy = false; return; }
+      busy = true;
+      const text = pending.shift();
+      typing.hidden = false;
+      // ใช้ aria-disabled แทน disabled เพื่อไม่ให้ปุ่มที่โฟกัสอยู่เสียโฟกัสระหว่างรอคำตอบ
+      chipsBox.querySelectorAll('button').forEach((b) => { b.setAttribute('aria-disabled', 'true'); });
+      log.scrollTop = log.scrollHeight;
+      const delay = reduce() ? 150 : 350 + Math.min(text.length, 120) * 4;
+      setTimeout(() => {
+        typing.hidden = true;
+        const out = respond(text);
+        addMsg('bot', out.lines);
+        const hadFocus = chipsBox.contains(document.activeElement) || document.activeElement === document.body;
+        renderChips(out.chips);
+        if (pending.length) next();
+        else {
+          busy = false;
+          // กดปุ่มแล้วปุ่มถูกสร้างใหม่ ให้โฟกัสไปปุ่มแรกที่กดได้ (หรือช่องพิมพ์) เพื่อไม่ให้หลุดไป body
+          if (refocus && isOpen() && hadFocus) {
+            const firstChip = chipsBox.querySelector('button:not(:disabled)');
+            (firstChip || input).focus();
+          }
+          refocus = false;
+        }
+      }, delay);
+    }
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const v = input.value;
+      input.value = '';
+      send(v);
+      input.focus();
+    });
+
+    /* ----- เปิด/ปิด/โฟกัส ----- */
+    function greet() {
+      const out = answer({ intent: 'greet' });
+      addMsg('bot', out.lines);
+      renderChips(out.chips);
+    }
+    function open(opener) {
+      if (isOpen()) { input.focus(); return; }
+      lastFocus = opener || document.activeElement;
+      panel.hidden = false;
+      fab.setAttribute('aria-expanded', 'true');
+      if (!greeted) { greeted = true; greet(); }
+      render();
+      input.focus();
+    }
+    function close() {
+      if (!isOpen()) return;
+      panel.hidden = true;
+      fab.setAttribute('aria-expanded', 'false');
+      const back = lastFocus && document.contains(lastFocus) && !lastFocus.closest('[hidden]') ? lastFocus : fab;
+      back.focus();
+    }
+    fab.addEventListener('click', () => open(fab));
+    $('chatClose').addEventListener('click', close);
+    $('chatClear').addEventListener('click', () => { log.replaceChildren(); flow = null; pending.length = 0; busy = false; typing.hidden = true; greet(); input.focus(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isOpen()) { e.preventDefault(); close(); return; }
+      if (e.key === 'Tab' && isOpen() && window.matchMedia('(max-width: 639px)').matches && panel.contains(document.activeElement)) {
+        const f = Array.from(panel.querySelectorAll('button, input, summary, [tabindex="0"]')).filter((x) => !x.disabled && x.offsetParent !== null);
+        if (!f.length) return;
+        const first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
+    prog.addEventListener('input', () => update(() => { state.chat.progress = Number(prog.value) / 100; }));
+    function render() {
+      const v = Math.round(state.chat.progress * 100);
+      if (document.activeElement !== prog) prog.value = v;
+      progOut.textContent = v;
+    }
+    function onStateChange() {
+      clearTimeout(syncTimer);
+      syncTimer = setTimeout(() => {
+        if (isOpen() && greeted && sig() !== lastSig) addMsg('bot', ['ข้อมูลร้านอัปเดตแล้ว'], true);
+      }, 800);
+    }
+    return { open: open, close: close, render: render, onStateChange: onStateChange };
+  })();
+
+  /* ---------- เริ่มต้น ---------- */
+  function init() {
+    const loaded = loadState();
+    if (loaded) { Object.assign(state, loaded); lastKnown = Object.assign({}, loaded.prices); }
+    buildStep1(); buildStep2(); buildStep3(); buildAws();
+    $('btnClearData').addEventListener('click', () => {
+      try { localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(WASTE_LOG_KEY); } catch (e) { /* ไม่มีอะไรให้ล้าง */ }
+      Object.assign(state, defaults());
+      lastKnown = Object.assign({}, BENCHMARK);
+      $('wasteStatus').textContent = 'ล้างข้อมูลที่บันทึกไว้แล้ว';
+      update();
+    });
+    ['navChat', 'heroChat'].forEach((id) => $(id).addEventListener('click', (e) => Chat.open(e.currentTarget)));
+    derived = Core.derive(state);
+    renderAll();
+  }
+  init();
+
+})();
+</script>
+</body>
+</html>

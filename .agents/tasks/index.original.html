@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartBatch & FreshMargin AI - ผู้ช่วยวางแผนการผลิตและควบคุมต้นทุน SME ไทย</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Sarabun', 'Noto Sans Thai', sans-serif;
+    }
+    body {
+      background-color: var(--slate-100);
+      color: var(--slate-800);
+      line-height: 1.5;
+      padding-bottom: 60px;
+    }
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+      color: white;
+      padding: 24px 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo-area h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-area p {
+      font-size: 0.9rem;
+      color: #93c5fd;
+      margin-top: 4px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-aws {
+      background: rgba(255, 153, 0, 0.2);
+      color: #ff9900;
+      border: 1px solid #ff9900;
+    }
+    .badge-ready {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid #10b981;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+    .disclaimer-card {
+      background: #fffbeb;
+      border-left: 4px solid var(--warning);
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 24px;
+      font-size: 0.88rem;
+      color: #92400e;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      border: 1px solid var(--slate-200);
+    }
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--slate-100);
+      padding-bottom: 10px;
+    }
+    .card-title .icon {
+      margin-right: 6px;
+    }
+    .form-group {
+      margin-bottom: 14px;
+    }
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--slate-700);
+      margin-bottom: 6px;
+    }
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    input[type="range"] {
+      flex: 1;
+      height: 6px;
+      accent-color: var(--primary);
+    }
+    .price-tag {
+      min-width: 80px;
+      font-weight: 700;
+      text-align: right;
+      color: var(--slate-900);
+      font-size: 0.95rem;
+    }
+    input[type="number"], select {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--slate-300);
+      font-size: 0.95rem;
+      background: white;
+    }
+    input[type="number"]:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+    }
+    .metric-box {
+      background: var(--slate-50);
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--slate-200);
+      text-align: center;
+    }
+    .metric-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-top: 4px;
+    }
+    .metric-label {
+      font-size: 0.8rem;
+      color: var(--slate-600);
+    }
+    .metric-sub {
+      font-size: 0.72rem;
+      color: var(--slate-600);
+      margin-top: 2px;
+    }
+    .scenario-card {
+      border: 2px solid transparent;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      position: relative;
+    }
+    .scenario-card:hover {
+      transform: translateY(-2px);
+    }
+    .scenario-card.active-conservative {
+      border-color: var(--success);
+      background: #f0fdf4;
+    }
+    .scenario-card.active-balanced {
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
+    .scenario-card.active-aggressive {
+      border-color: var(--warning);
+      background: #fffbeb;
+    }
+    .status-pill {
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .pill-safe { background: #d1fae5; color: #065f46; }
+    .pill-warn { background: #fef3c7; color: #92400e; }
+    .pill-danger { background: #fee2e2; color: #991b1b; }
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.88rem;
+      padding: 6px 0;
+      border-bottom: 1px dashed var(--slate-200);
+    }
+    .breakdown-row:last-child {
+      border-bottom: none;
+      font-weight: 700;
+    }
+    .aws-arch-box {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 8px;
+      padding: 16px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      overflow-x: auto;
+      line-height: 1.4;
+      margin-top: 12px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      background: var(--primary);
+      color: white;
+      transition: background 0.15s;
+    }
+    .btn:hover {
+      background: var(--primary-dark);
+    }
+    .btn-secondary {
+      background: var(--slate-200);
+      color: var(--slate-700);
+    }
+    .btn-secondary:hover {
+      background: var(--slate-300);
+    }
+    .quick-preset-btn {
+      padding: 4px 8px;
+      font-size: 0.75rem;
+      border-radius: 4px;
+      border: 1px solid var(--slate-300);
+      background: white;
+      cursor: pointer;
+      margin-right: 4px;
+    }
+    .quick-preset-btn:hover {
+      background: var(--slate-100);
+    }
+    footer {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--slate-600);
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-container">
+    <div class="logo-area">
+      <h1>🍲 SmartBatch & FreshMargin AI</h1>
+      <p>ระบบวางแผนรอบผลิตและเรดาร์ควบคุมต้นทุนวัตถุดิบผันผวนสำหรับ SME อาหารไทย (Zero-History Engine)</p>
+    </div>
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <span class="badge badge-aws">AWS Serverless Ready</span>
+      <span class="badge badge-ready">Real-time Recalc Active</span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="disclaimer-card">
+    <span style="font-size: 1.2rem;">💡</span>
+    <div>
+      <strong>แนวคิดต้นแบบสำหรับแก้ปัญหาจริงของ SME ในไทย:</strong> 
+      ร้านค้าอาหารและเบเกอรี่ส่วนใหญ่ไม่มีระบบ AI ช่วยวิเคราะห์เพราะ <em>"ไม่มีประวัติยอดขายย้อนหลัง (Zero-History)"</em> 
+      และราคาวัตถุดิบสดในตลาดผันผวนรายวัน ระบบนี้ช่วยให้เจ้าของร้านใส่ข้อมูลที่รู้รอบเช้า แล้วคำนวณแผน 3 สถานการณ์ได้ทันทีใน 3 นาที!
+    </div>
+  </div>
+
+  <!-- ROW 1: Raw Material Volatility Barometer & Recipe Costing -->
+  <div class="grid-2">
+    <!-- Card 1: Market Ingredients Volatility -->
+    <div class="card">
+      <div class="card-title">
+        <span><span class="icon">🛒</span>เรดาร์ราคาวัตถุดิบสดตลาดไทย (Daily Market Index)</span>
+        <span style="font-size: 0.75rem; color: var(--slate-600);">ปรับราคาเพื่อทดสอบ</span>
+      </div>
+      <p style="font-size: 0.8rem; color: var(--slate-600); margin-bottom: 14px;">
+        จำลองราคาตลาดสดวันนี้ (เช่น ตลาดไท / ตลาดยิ่งเจริญ) เมื่อราคาผันผวน ต้นทุนสูตรอาหารและกำไรจะคำนวณใหม่ทันที
+      </p>
+
+      <div class="form-group">
+        <label>🍋 มะนาวแป้น (บาท/ลูก) — <em>ปกติ 2.50 บ. ช่วงแล้งอาจพุ่ง 9 บ.</em></label>
+        <div class="slider-row">
+          <input type="range" id="priceLime" min="1" max="10" step="0.5" value="3.5" oninput="calculateAll()">
+          <span class="price-tag" id="valLime">3.50 ฿</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>🥩 หมูสามชั้น / หมูกรอบ (บาท/กก.) — <em>ผันผวนตามรอบสัปดาห์</em></label>
+        <div class="slider-row">
+          <input type="range" id="pricePork" min="130" max="250" step="5" value="180" oninput="calculateAll()">
+          <span class="price-tag" id="valPork">180 ฿</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>🥚 ไข่ไก่เบอร์ 2 (บาท/ฟอง) — <em>กลไกราคาหน้าฟาร์ม</em></label>
+        <div class="slider-row">
+          <input type="range" id="priceEgg" min="3.0" max="6.0" step="0.2" value="4.2" oninput="calculateAll()">
+          <span class="price-tag" id="valEgg">4.20 ฿</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>🧈 เนยสดแท้ (บาท/กก.) — <em>สำหรับสายเบเกอรี่/คาเฟ่</em></label>
+        <div class="slider-row">
+          <input type="range" id="priceButter" min="180" max="380" step="10" value="260" oninput="calculateAll()">
+          <span class="price-tag" id="valButter">260 ฿</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 10px; display: flex; gap: 6px;">
+        <span style="font-size: 0.75rem; color: var(--slate-600); align-self: center;">สถานการณ์จำลอง:</span>
+        <button class="quick-preset-btn" onclick="applyPreset('normal')">ราคาปกติ</button>
+        <button class="quick-preset-btn" onclick="applyPreset('lime_surge')">วิกฤตมะนาวแพง</button>
+        <button class="quick-preset-btn" onclick="applyPreset('meat_surge')">วิกฤตเนื้อหมูพุ่ง</button>
+      </div>
+    </div>
+
+    <!-- Card 2: Dynamic Recipe Cost & Margin Health -->
+    <div class="card">
+      <div class="card-title">
+        <span><span class="icon">🥗</span>ผ่าโครงสร้างต้นทุนเมนู (Dynamic Recipe Yield)</span>
+        <span id="marginHealthBadge" class="status-pill pill-safe">กำไรสุขภาพดี</span>
+      </div>
+
+      <div class="form-group">
+        <label>เลือกเมนูที่ต้องการคำนวณ:</label>
+        <select id="menuSelect" onchange="changeMenu()">
+          <option value="pork_rice">ข้าวหมูกรอบคั่วพริกเกลือ (อาหารจานเดียว)</option>
+          <option value="croissant">ครัวซองต์เนยสดพรีเมียม (เบเกอรี่)</option>
+          <option value="tomyum">ต้มยำกุ้งน้ำข้น (กับข้าว)</option>
+        </select>
+      </div>
+
+      <div class="grid-2" style="margin-bottom: 12px;">
+        <div class="metric-box">
+          <div class="metric-label">ราคาขายหน้าร้าน</div>
+          <div class="metric-value" id="dispSellingPrice" style="color: var(--slate-800);">65 ฿</div>
+          <div class="metric-sub" id="dispDeliveryPrice">Delivery (GP 30%): 89 ฿</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">ต้นทุนรวมต่อจาน (True Cost)</div>
+          <div class="metric-value" id="dispTotalCost" style="color: var(--danger);">32.4 ฿</div>
+          <div class="metric-sub" id="dispYieldLoss">รวมค่าหั่นสูญเสีย (Yield Loss) 12%</div>
+        </div>
+      </div>
+
+      <div class="card" style="padding: 12px; background: var(--slate-50); border: 1px solid var(--slate-200);">
+        <div class="breakdown-row">
+          <span>ต้นทุนวัตถุดิบสดตามตลาดวันนี้</span>
+          <span id="breakdownRawCost">22.40 ฿</span>
+        </div>
+        <div class="breakdown-row">
+          <span>เครื่องปรุง กล่องบรรจุภัณฑ์ & ค่าแก๊ส</span>
+          <span>7.50 ฿</span>
+        </div>
+        <div class="breakdown-row">
+          <span>ค่าแรงแปรผันต่อหน่วย</span>
+          <span>2.50 ฿</span>
+        </div>
+        <div class="breakdown-row" style="color: var(--primary);">
+          <span>กำไรขั้นต้นหน้าร้าน (Gross Margin)</span>
+          <span id="dispGrossMargin">32.60 ฿ (50.2%)</span>
+        </div>
+      </div>
+
+      <div id="marginAlertBox" style="display: none; margin-top: 10px; padding: 10px; background: #fee2e2; border-radius: 6px; font-size: 0.8rem; color: #991b1b;">
+        ⚠️ <strong>เตือนภัย Margin รั่ว:</strong> กำไรขั้นต้นลดต่ำกว่า 40% จากราคาวัตถุดิบที่ปรับขึ้น แนะนำพิจารณาปรับสัดส่วนสูตร หรือดันยอดขายช่องทางหน้าร้านแทนเดลิเวอรี่
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: SmartBatch Zero-History Planner (Core Innovation) -->
+  <div class="card" style="margin-bottom: 24px;">
+    <div class="card-title">
+      <span><span class="icon">⚡</span>เครื่องคำนวณรอบการผลิต SmartBatch (Zero-History Planner)</span>
+      <span class="badge" style="background: var(--primary-light); color: var(--primary);">ปัดเศษตาม Batch Size จริง</span>
+    </div>
+    <p style="font-size: 0.85rem; color: var(--slate-600); margin-bottom: 16px;">
+      สำหรับรอบการผลิตถัดไป (เช่น อบขนมตอน 6 โมงเช้า หรือเตรียมอาหารเที่ยง) 
+      ใส่เฉพาะข้อมูลที่คุณรู้ในเช้านี้ ระบบจะช่วยประเมินแผนการผลิต 3 ระดับความเสี่ยงให้ทันที
+    </p>
+
+    <!-- Inputs Row -->
+    <div class="grid-3" style="margin-bottom: 18px;">
+      <div class="form-group">
+        <label>📦 1. ออเดอร์ที่ยืนยันแล้ว (Pre-orders):</label>
+        <input type="number" id="inputPreOrder" value="28" min="0" oninput="calculateAll()">
+        <span style="font-size: 0.75rem; color: var(--slate-600);">จำนวนชิ้นที่ลูกค้าจ่ายเงินหรือจองไว้แล้ว</span>
+      </div>
+
+      <div class="form-group">
+        <label>🥡 2. สต็อกพร้อมขายที่เหลืออยู่ (Remaining Stock):</label>
+        <input type="number" id="inputStock" value="6" min="0" oninput="calculateAll()">
+        <span style="font-size: 0.75rem; color: var(--slate-600);">ของดีที่ยังไม่ถูกกันไว้ให้ออเดอร์</span>
+      </div>
+
+      <div class="form-group">
+        <label>🚶‍♂️ 3. ยอดคาดหวังหน้าร้าน (Expected Walk-in):</label>
+        <input type="number" id="inputWalkIn" value="35" min="0" oninput="calculateAll()">
+        <span style="font-size: 0.75rem; color: var(--slate-600);">ประมาณการลูกค้าหน้าร้านที่อยากได้</span>
+      </div>
+    </div>
+
+    <div style="background: var(--slate-50); padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <label style="margin: 0; font-size: 0.9rem;">⚙️ ขีดจำกัดรอบผลิต (Batch Capacity Unit):</label>
+        <select id="batchUnit" style="width: auto; padding: 4px 8px;" onchange="calculateAll()">
+          <option value="12">12 ชิ้น (1 ถาด / 1 หม้อเล็ก)</option>
+          <option value="24" selected>24 ชิ้น (1 เตาอบ / 1 ล็อตมาตรฐาน)</option>
+          <option value="50">50 ชิ้น (กำลังผลิตหม้อใหญ่)</option>
+        </select>
+      </div>
+      <span style="font-size: 0.8rem; color: var(--slate-600);">*ระบบจะ Quantize จำนวนผลิตให้ตรงกับ Batch จริงเสมอ ไม่สร้างเศษที่ทำไม่ได้</span>
+    </div>
+
+    <!-- Scenarios Grid -->
+    <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--slate-800);">เปรียบเทียบ 3 ทางเลือกการผลิต (Scenario Comparison):</h3>
+    <div class="grid-3">
+      <!-- Scenario A: Conservative -->
+      <div class="card scenario-card active-conservative" id="scenCardA" onclick="selectScenario('A')">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-weight: 700; color: #065f46;">🛡️ แผน A: เซฟสุดขีด (Conservative)</span>
+          <span class="status-pill pill-safe">เสี่ยงทิ้ง 0%</span>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--slate-600); margin-bottom: 12px;">
+          ผลิตเท่าที่จำเป็นตามออเดอร์ยืนยัน + ปัดให้ครบ Batch ไม่เสี่ยงของเหลือทิ้ง
+        </p>
+        <div class="metric-box" style="background: white; margin-bottom: 10px;">
+          <div class="metric-label">จำนวนที่ต้องผลิต</div>
+          <div class="metric-value" id="scenA_prod" style="color: #065f46;">24 ชิ้น</div>
+          <div class="metric-sub" id="scenA_batches">(1 รอบเตา)</div>
+        </div>
+        <div class="breakdown-row">
+          <span>กำไรที่การันตีแน่นอน</span>
+          <strong id="scenA_profit" style="color: #065f46;">782 ฿</strong>
+        </div>
+        <div class="breakdown-row">
+          <span>ความเสี่ยงของเหลือทิ้ง</span>
+          <span style="color: var(--success);">0 ฿</span>
+        </div>
+      </div>
+
+      <!-- Scenario B: Balanced -->
+      <div class="card scenario-card active-balanced" id="scenCardB" onclick="selectScenario('B')">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-weight: 700; color: var(--primary);">⚖️ แผน B: สมดุลแนะนำ (Balanced)</span>
+          <span class="status-pill pill-warn">แนะนำ</span>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--slate-600); margin-bottom: 12px;">
+          รองรับออเดอร์ครบ + เผื่อลูกค้ารองรับ Walk-in 60% แบบมีเบาะรองรับ
+        </p>
+        <div class="metric-box" style="background: white; margin-bottom: 10px;">
+          <div class="metric-label">จำนวนที่ต้องผลิต</div>
+          <div class="metric-value" id="scenB_prod" style="color: var(--primary);">48 ชิ้น</div>
+          <div class="metric-sub" id="scenB_batches">(2 รอบเตา)</div>
+        </div>
+        <div class="breakdown-row">
+          <span>กำไรเป้าหมายที่คาดหวัง</span>
+          <strong id="scenB_profit" style="color: var(--primary);">1,420 ฿</strong>
+        </div>
+        <div class="breakdown-row">
+          <span>จุดคุ้มทุน Walk-in</span>
+          <span id="scenB_breakeven">ขายเพิ่ม 7 ชิ้นคืนทุน</span>
+        </div>
+      </div>
+
+      <!-- Scenario C: Aggressive -->
+      <div class="card scenario-card active-aggressive" id="scenCardC" onclick="selectScenario('C')">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-weight: 700; color: #b45309;">🚀 แผน C: รุกเต็มกำลัง (Aggressive)</span>
+          <span class="status-pill pill-danger">เสี่ยงขยะสูง</span>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--slate-600); margin-bottom: 12px;">
+          ผลิตเพื่อตอบสนองทุกยอด Walk-in ไม่ยอมให้ของขาดมือแม้แต่ชิ้นเดียว
+        </p>
+        <div class="metric-box" style="background: white; margin-bottom: 10px;">
+          <div class="metric-label">จำนวนที่ต้องผลิต</div>
+          <div class="metric-value" id="scenC_prod" style="color: #b45309;">72 ชิ้น</div>
+          <div class="metric-sub" id="scenC_batches">(3 รอบเตา)</div>
+        </div>
+        <div class="breakdown-row">
+          <span>กำไรสูงสุดที่เป็นไปได้</span>
+          <strong id="scenC_profit" style="color: #b45309;">1,890 ฿</strong>
+        </div>
+        <div class="breakdown-row">
+          <span>ความเสี่ยงเงินจมในถังขยะ</span>
+          <span id="scenC_risk" style="color: var(--danger);">-486 ฿</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3: Waste Tracker & AWS Architecture Blueprint -->
+  <div class="grid-2">
+    <!-- Waste & Money Bleed Calculator -->
+    <div class="card">
+      <div class="card-title">
+        <span><span class="icon">🗑️</span>เรดาร์ของเหลือทิ้ง (Zero-Waste Spoilage Guard)</span>
+      </div>
+      <p style="font-size: 0.82rem; color: var(--slate-600); margin-bottom: 14px;">
+        บันทึกสินค้าที่ขายไม่หมดในรอบนี้ เพื่อเปลี่ยนความสูญเสียเป็นเงินออมสำหรับรอบถัดไป
+      </p>
+
+      <div class="form-group">
+        <label>จำนวนสินค้าที่เหลือตอนปิดรอบ (ชิ้น):</label>
+        <div style="display: flex; gap: 10px;">
+          <input type="number" id="wasteQty" value="4" min="0" oninput="updateWaste()">
+          <button class="btn" style="white-space: nowrap;" onclick="logWaste()">บันทึก Log</button>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="metric-box">
+          <div class="metric-label">มูลค่าเงินจมในถังขยะ</div>
+          <div class="metric-value" id="wasteCost" style="color: var(--danger);">129.6 ฿</div>
+          <div class="metric-sub">เทียบเท่าต้นทุนวัตถุดิบสูญเปล่า</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">คำแนะนำรอบพรุ่งนี้</div>
+          <div class="metric-value" style="font-size: 1rem; color: var(--slate-800); margin-top: 8px;" id="wasteRec">
+            ลด Walk-in ลง 15%
+          </div>
+          <div class="metric-sub">ปรับพฤติกรรมอัตโนมัติ</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AWS Serverless Cloud Blueprint -->
+    <div class="card">
+      <div class="card-title">
+        <span><span class="icon">☁️</span>สถาปัตยกรรมคลาวด์ AWS สำหรับ SME</span>
+        <span class="badge badge-aws">Low-Cost Architecture</span>
+      </div>
+      <p style="font-size: 0.82rem; color: var(--slate-600);">
+        ออกแบบให้ทำงานแบบ <strong>100% Serverless</strong> ต้นทุนรวมไม่เกิน <strong>$0.50 USD (~18 บาท)/เดือนต่อร้าน</strong>
+      </p>
+
+      <div class="aws-arch-box">
++--------------------------------------------------------+
+| [User Mobile] -> CloudFront + S3 (Static Web App)       |
+|       |                                                |
+|       v                                                |
+| API Gateway -> AWS Lambda (SmartBatch Calculator API)  |
+|       |                                                |
+|       +------> Amazon DynamoDB (Store Batch & Recipes) |
+|       |                                                |
+|       +------> Amazon Bedrock (OCR ใบเสร็จตลาดสด)      |
++--------------------------------------------------------+
+• Zero Idle Cost: ไม่คิดเงินเมื่อไม่มีการเรียกใช้
+• Cold-Start Resilient: คำนวณเร็วระดับ Milliseconds
+• Privacy-First: ข้อมูลยอดขายแยกตาม Tenant ID
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>SmartBatch & FreshMargin AI Prototype — จัดทำขึ้นเพื่อเป็นแนวคิดและต้นแบบสำหรับ SME ไทยบนคลาวด์ AWS</p>
+  <p style="font-size: 0.75rem; color: var(--slate-600); margin-top: 4px;">รองรับการทำงานแบบ Single-Page Application (SPA) บน Amazon S3 & CloudFront</p>
+</footer>
+
+<script>
+  // Recipes database
+  const recipes = {
+    pork_rice: {
+      name: "ข้าวหมูกรอบคั่วพริกเกลือ",
+      sellingPrice: 65,
+      deliveryPrice: 89,
+      baseFixedCost: 10.0, // ข้าวสวย น้ำมัน กล่อง ค่าแก๊ส ค่าแรง
+      calcRawCost: (lime, pork, egg, butter) => {
+        // ใช้หมู 120g (Yield 75% = ต้องใช้หมูดิบ 160g), ไข่ 0.5 ฟอง, มะนาว 0.2 ลูก
+        return (pork * 0.16) + (egg * 0.5) + (lime * 0.2);
+      }
+    },
+    croissant: {
+      name: "ครัวซองต์เนยสดพรีเมียม",
+      sellingPrice: 55,
+      deliveryPrice: 79,
+      baseFixedCost: 7.0, // แป้ง ยีสต์ นม กล่อง บรรจุภัณฑ์ ค่าไฟเตาอบ
+      calcRawCost: (lime, pork, egg, butter) => {
+        // ใช้เนยสดแท้ 45g, ไข่ 0.3 ฟอง
+        return (butter * 0.045) + (egg * 0.3);
+      }
+    },
+    tomyum: {
+      name: "ต้มยำกุ้งน้ำข้น",
+      sellingPrice: 150,
+      deliveryPrice: 199,
+      baseFixedCost: 35.0, // กุ้งแม่น้ำ เครื่องต้มยำ นมข้น เห็ดฟาง ถุง ค่าแก๊ส
+      calcRawCost: (lime, pork, egg, butter) => {
+        // ใช้มะนาวสด 3 ลูก, เครื่องสด
+        return (lime * 3.0) + (egg * 0.2);
+      }
+    }
+  };
+
+  let currentMenu = 'pork_rice';
+  let selectedScenario = 'B';
+
+  function applyPreset(type) {
+    if (type === 'normal') {
+      document.getElementById('priceLime').value = 3.5;
+      document.getElementById('pricePork').value = 180;
+      document.getElementById('priceEgg').value = 4.2;
+      document.getElementById('priceButter').value = 260;
+    } else if (type === 'lime_surge') {
+      document.getElementById('priceLime').value = 9.0;
+      document.getElementById('pricePork').value = 185;
+      document.getElementById('priceEgg').value = 4.5;
+      document.getElementById('priceButter').value = 270;
+    } else if (type === 'meat_surge') {
+      document.getElementById('priceLime').value = 4.0;
+      document.getElementById('pricePork').value = 240;
+      document.getElementById('priceEgg').value = 5.2;
+      document.getElementById('priceButter').value = 320;
+    }
+    calculateAll();
+  }
+
+  function changeMenu() {
+    currentMenu = document.getElementById('menuSelect').value;
+    calculateAll();
+  }
+
+  function selectScenario(scen) {
+    selectedScenario = scen;
+    document.querySelectorAll('.scenario-card').forEach(el => {
+      el.style.transform = 'none';
+      el.style.boxShadow = 'none';
+    });
+    const card = document.getElementById('scenCard' + scen);
+    if (card) {
+      card.style.transform = 'translateY(-3px)';
+      card.style.boxShadow = '0 6px 16px rgba(0,0,0,0.1)';
+    }
+  }
+
+  function calculateAll() {
+    const lime = parseFloat(document.getElementById('priceLime').value);
+    const pork = parseFloat(document.getElementById('pricePork').value);
+    const egg = parseFloat(document.getElementById('priceEgg').value);
+    const butter = parseFloat(document.getElementById('priceButter').value);
+
+    // Update tags
+    document.getElementById('valLime').innerText = lime.toFixed(2) + ' ฿';
+    document.getElementById('valPork').innerText = pork.toFixed(0) + ' ฿';
+    document.getElementById('valEgg').innerText = egg.toFixed(2) + ' ฿';
+    document.getElementById('valButter').innerText = butter.toFixed(0) + ' ฿';
+
+    const menu = recipes[currentMenu];
+    const rawCost = menu.calcRawCost(lime, pork, egg, butter);
+    const totalCost = rawCost + menu.baseFixedCost;
+    const sellingPrice = menu.sellingPrice;
+    const grossMarginTHB = sellingPrice - totalCost;
+    const grossMarginPct = (grossMarginTHB / sellingPrice) * 100;
+
+    // Display recipe info
+    document.getElementById('dispSellingPrice').innerText = sellingPrice.toFixed(0) + ' ฿';
+    document.getElementById('dispDeliveryPrice').innerText = `Delivery (GP 30%): ${menu.deliveryPrice} ฿`;
+    document.getElementById('dispTotalCost').innerText = totalCost.toFixed(2) + ' ฿';
+    document.getElementById('breakdownRawCost').innerText = rawCost.toFixed(2) + ' ฿';
+    document.getElementById('dispGrossMargin').innerText = `${grossMarginTHB.toFixed(2)} ฿ (${grossMarginPct.toFixed(1)}%)`;
+
+    // Margin Alert
+    const alertBox = document.getElementById('marginAlertBox');
+    const badge = document.getElementById('marginHealthBadge');
+    if (grossMarginPct < 40) {
+      alertBox.style.display = 'block';
+      badge.className = 'status-pill pill-danger';
+      badge.innerText = 'เตือนภัย Margin ต่ำ (' + grossMarginPct.toFixed(1) + '%)';
+    } else if (grossMarginPct < 50) {
+      alertBox.style.display = 'none';
+      badge.className = 'status-pill pill-warn';
+      badge.innerText = 'เฝ้าระวัง (' + grossMarginPct.toFixed(1) + '%)';
+    } else {
+      alertBox.style.display = 'none';
+      badge.className = 'status-pill pill-safe';
+      badge.innerText = 'กำไรสุขภาพดี (' + grossMarginPct.toFixed(1) + '%)';
+    }
+
+    // Batch Planning calculations
+    const preOrder = parseInt(document.getElementById('inputPreOrder').value) || 0;
+    const stock = parseInt(document.getElementById('inputStock').value) || 0;
+    const walkIn = parseInt(document.getElementById('inputWalkIn').value) || 0;
+    const batchSize = parseInt(document.getElementById('batchUnit').value) || 24;
+
+    // Net demand calculations
+    // Plan A: Conservative = max(0, preOrder - stock) rounded up to batchSize
+    const netPreOrder = Math.max(0, preOrder - stock);
+    const batchesA = Math.ceil(netPreOrder / batchSize);
+    const prodA = batchesA * batchSize;
+    const profitA = (preOrder * grossMarginTHB) - ((prodA - netPreOrder) * totalCost);
+
+    document.getElementById('scenA_prod').innerText = `${prodA} ชิ้น`;
+    document.getElementById('scenA_batches').innerText = `(${batchesA} รอบเตา/หม้อ)`;
+    document.getElementById('scenA_profit').innerText = `${Math.max(0, profitA).toFixed(0)} ฿`;
+
+    // Plan B: Balanced = max(0, preOrder + 0.6*walkIn - stock) rounded up to batchSize
+    const netBal = Math.max(0, (preOrder + Math.round(walkIn * 0.6)) - stock);
+    const batchesB = Math.max(batchesA, Math.ceil(netBal / batchSize));
+    const prodB = batchesB * batchSize;
+    const expectedSoldB = Math.min(stock + prodB, preOrder + Math.round(walkIn * 0.7));
+    const profitB = (expectedSoldB * sellingPrice) - (prodB * totalCost) - (stock * totalCost);
+    const breakEvenWalkIn = Math.ceil((prodB * totalCost - preOrder * grossMarginTHB) / sellingPrice);
+
+    document.getElementById('scenB_prod').innerText = `${prodB} ชิ้น`;
+    document.getElementById('scenB_batches').innerText = `(${batchesB} รอบเตา/หม้อ)`;
+    document.getElementById('scenB_profit').innerText = `${profitB.toFixed(0)} ฿`;
+    document.getElementById('scenB_breakeven').innerText = `ขายหน้าร้านเพิ่ม ${Math.max(0, breakEvenWalkIn)} ชิ้นคืนทุน`;
+
+    // Plan C: Aggressive = max(0, preOrder + walkIn - stock) rounded up
+    const netAgg = Math.max(0, (preOrder + walkIn) - stock);
+    const batchesC = Math.max(batchesB, Math.ceil(netAgg / batchSize));
+    const prodC = batchesC * batchSize;
+    const profitC = ((preOrder + walkIn) * grossMarginTHB);
+    const riskC = (prodC - (preOrder + Math.round(walkIn * 0.5))) * totalCost;
+
+    document.getElementById('scenC_prod').innerText = `${prodC} ชิ้น`;
+    document.getElementById('scenC_batches').innerText = `(${batchesC} รอบเตา/หม้อ)`;
+    document.getElementById('scenC_profit').innerText = `${profitC.toFixed(0)} ฿`;
+    document.getElementById('scenC_risk').innerText = `-${riskC.toFixed(0)} ฿`;
+
+    updateWaste();
+  }
+
+  function updateWaste() {
+    const wasteQty = parseInt(document.getElementById('wasteQty').value) || 0;
+    const menu = recipes[currentMenu];
+    const lime = parseFloat(document.getElementById('priceLime').value);
+    const pork = parseFloat(document.getElementById('pricePork').value);
+    const egg = parseFloat(document.getElementById('priceEgg').value);
+    const butter = parseFloat(document.getElementById('priceButter').value);
+    const totalCost = menu.calcRawCost(lime, pork, egg, butter) + menu.baseFixedCost;
+
+    const lostMoney = wasteQty * totalCost;
+    document.getElementById('wasteCost').innerText = `${lostMoney.toFixed(1)} ฿`;
+
+    const rec = document.getElementById('wasteRec');
+    if (wasteQty > 6) {
+      rec.innerText = 'ลด Walk-in ลง 25% ทันที';
+      rec.style.color = 'var(--danger)';
+    } else if (wasteQty > 0) {
+      rec.innerText = 'ปรับลดผลิตลง 1 Batch';
+      rec.style.color = 'var(--warning)';
+    } else {
+      rec.innerText = 'กำลังผลิตสมดุลยอดเยี่ยม';
+      rec.style.color = 'var(--success)';
+    }
+  }
+
+  function logWaste() {
+    alert('บันทึกข้อมูลสินค้าเหลือทิ้งเรียบร้อย! ระบบจะนำตัวเลขนี้ไปปรับลดน้ำหนัก Walk-in ของการผลิตในวันพรุ่งนี้โดยอัตโนมัติ');
+  }
+
+  // Initialize
+  calculateAll();
+  selectScenario('B');
+</script>
+</body>
+</html>
